@@ -120,11 +120,22 @@ export const user = defineStore("user", {
     },
     // 获取当前登录人信息
     getUserInfo() {
-      return this.infoFlag ? JSON.parse(_decrypt(this.userInfo)) : "";
+      try {
+        return this.infoFlag ? JSON.parse(_decrypt(this.userInfo)) : "";
+      } catch (err) {
+        console.error(err);
+        // 防止由于 解密密码不一致 导致项目加载阻塞
+        this.clearUserInfo();
+      }
     },
     // 获取token
     getToken() {
-      return this.tokenFlag ? _decrypt(this.token) : "";
+      try {
+        return this.tokenFlag ? _decrypt(this.token) : "";
+      } catch (err) {
+        console.error(err);
+        this.clearUserInfo();
+      }
     },
   },
   actions: {
