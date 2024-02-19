@@ -482,7 +482,7 @@ onBeforeUnmount(() => {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  height: 120px;
+  height: 80px;
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -490,7 +490,7 @@ onBeforeUnmount(() => {
 
   .control {
     width: 100%;
-    margin: 0 20px;
+    margin: 0 10px;
     padding: 10px 20px;
     display: flex;
     justify-content: center;
@@ -499,7 +499,7 @@ onBeforeUnmount(() => {
     border-radius: 60px;
 
     &-group {
-      width: 12%;
+      width: 15%;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -671,7 +671,7 @@ onBeforeUnmount(() => {
   }
 
   .control-group {
-    width: 30%;
+    width: 30% !important;
   }
 
   .close-board {

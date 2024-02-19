@@ -15,7 +15,7 @@ const topList = ref([]);
 
 const currentMusicList = ref([]); // 当前音乐播放列表
 
-const currentTop = ref();
+const currentTop = ref(null);
 
 const scrollLoading = ref(false);
 
@@ -171,12 +171,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="music-list">
-    <div class="max-w-[1080px] flex justify-between items-start">
+    <div class="!max-w-[1024px] !w-[100%] flex justify-between items-start">
       <div class="music-list__left">
         <div class="header">分类歌单</div>
-        <el-row v-if="topList.length" class="body">
+        <el-row v-loading="musicListLoading" class="body">
           <el-col
-            v-loading="musicListLoading"
             class="flex justify-center items-center overflow-auto"
             :span="6"
             v-for="item in topList"
@@ -190,30 +189,27 @@ onBeforeUnmount(() => {
         </el-row>
       </div>
       <div class="music-list__right">
-        <!-- <el-dropdown trigger="click" class="search-down">
-          <span class="iconfont icon-nav-search scale"></span>
-          <template #dropdown>
+        <div class="!w-[100%] flex items-center">
+          <span v-if="currentTop" class="top-name text-overflow" :title="currentTop.name">{{
+            currentTop.name
+          }}</span>
+          <el-popover
+            ref="elPopoverRef"
+            placement="bottom"
+            :width="330"
+            :show-arrow="false"
+            :teleported="false"
+            trigger="click"
+            @touchmove.stop.prevent
+          >
+            <template #reference>
+              <span class="iconfont icon-nav-search scale"></span>
+            </template>
             <SearchList />
-          </template>
-        </el-dropdown> -->
-        <span v-if="currentTop" class="top-name text-overflow" :title="currentTop.name">{{
-          currentTop.name
-        }}</span>
-        <el-popover
-          ref="elPopoverRef"
-          placement="bottom"
-          :width="330"
-          :show-arrow="false"
-          :teleported="false"
-          trigger="click"
-          @touchmove.stop.prevent
-        >
-          <template #reference>
-            <span class="iconfont icon-nav-search scale"></span>
-          </template>
-          <SearchList />
-        </el-popover>
-        <el-row>
+          </el-popover>
+        </div>
+
+        <el-row style="width: 100%">
           <el-col :span="24" class="header">
             <div class="title title1">歌曲</div>
             <div class="title title2">作者</div>
@@ -280,25 +276,34 @@ onBeforeUnmount(() => {
 
   &__left {
     width: 50%;
-    height: calc(100vh - 250px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     overflow: hidden;
+    padding-bottom: 10px;
     .header {
       padding-left: 20px;
       font-weight: 600;
       font-size: 1.2rem;
     }
     .body {
-      height: calc(100vh - 280px);
+      height: 100%;
       overflow: auto;
     }
   }
 
   &__right {
     position: relative;
-    height: calc(100vh - 250px);
     width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     overflow: hidden;
-    padding: 0 10px;
+    padding-bottom: 10px;
     .header {
       width: 100%;
       display: flex;
@@ -320,9 +325,8 @@ onBeforeUnmount(() => {
       }
     }
     .body {
-      height: calc(100vh - 300px);
+      height: 100%;
       overflow: auto;
-      padding-bottom: 20px;
     }
   }
   .top {
@@ -419,11 +423,6 @@ onBeforeUnmount(() => {
   .music-list__right {
     position: relative;
     width: 400px;
-    height: calc(100vh - 130px);
-  }
-
-  .body {
-    height: calc(100vh - 180px) !important;
   }
 
   .search-down {

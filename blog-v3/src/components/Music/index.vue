@@ -106,20 +106,20 @@ watch(
   &-box {
     position: relative;
     width: 100%;
-    max-width: 1080px;
+    max-width: 1024px;
     background-color: var(--global-white);
     overflow: hidden;
   }
 
   .list {
-    max-width: 1080px;
+    max-width: 1024px;
     height: 100%;
     padding-top: 30px;
     overflow: hidden;
   }
 
   .control {
-    max-width: 1080px;
+    max-width: 1024px;
   }
 }
 .icon-off-search {
@@ -195,7 +195,6 @@ watch(
 .paused {
   animation-play-state: paused;
 }
-
 // pc
 @media screen and (min-width: 768px) {
   .music-disc {
@@ -223,6 +222,8 @@ watch(
   }
 
   .music-box {
+    height: 100%;
+    max-height: 580px;
     position: relative;
     padding: 0;
     border-radius: 12px;
