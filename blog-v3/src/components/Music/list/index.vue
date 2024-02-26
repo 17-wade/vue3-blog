@@ -171,7 +171,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="music-list">
-    <div class="!max-w-[1024px] !w-[100%] flex justify-between items-start">
+    <div class="!max-w-[1024px] !w-[100%] flex md:justify-between justify-center items-start">
       <div class="music-list__left">
         <div class="header">分类歌单</div>
         <el-row v-loading="musicListLoading" class="body">
