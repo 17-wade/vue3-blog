@@ -460,8 +460,12 @@ export const music = defineStore("music", {
     setShowLyricBoard(val) {
       this.showLyricBoard = val;
     },
-    setIsShow() {
-      this.isShow = !this.isShow;
+    setIsShow(flag) {
+      if (flag) {
+        this.isShow = true;
+      } else {
+        this.isShow = !this.isShow;
+      }
     },
     setCustomerMusicList(type, music) {
       if (type == "add") {

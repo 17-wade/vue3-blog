@@ -9,9 +9,11 @@ import MusicControl from "./controls/index.vue";
 import { defineComponent, ref, watch } from "vue";
 import blogAvatar from "@/assets/img/blogAvatar.png";
 
+import { useRoute } from "vue-router";
 import { music } from "@/store/index";
 import { storeToRefs } from "pinia";
 
+const route = useRoute();
 const { getIsShow, getShowLyricBoard, getIsPaused, getIsToggleImg, getMusicDescription } =
   storeToRefs(music());
 
@@ -32,6 +34,20 @@ const toggleDisc = () => {
 const playMusic = () => {
   music().togglePlay();
 };
+
+watch(
+  () => route.query.showSpecial,
+  (newV) => {
+    if (newV) {
+      music().setIsShow(true);
+      music().setShowLyricBoard(true);
+      music().setLyricType("SPECIAL");
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 
 // 在弹出遮罩层的时候 让body不能滚动
 watch(

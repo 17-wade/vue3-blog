@@ -2,12 +2,27 @@
 import { watch, onMounted, onBeforeUnmount, nextTick, ref } from "vue";
 import { music } from "@/store";
 import { storeToRefs } from "pinia";
-import { gsapTransLyric } from "@/utils/transform";
+import { gsapTransLyric, gsapTransLyricLeftToRight } from "@/utils/transform";
 
 import SpecialTitle from "./special-title.vue";
 import { debounce } from "@/utils/tool";
+import useSpecial from "./useSpecial";
 
-let lyricBox, timer, timer1, timer2, timer3, timer4;
+const {
+  bg,
+  brightness,
+  specialTitleSize,
+  authorName,
+  specialLyricSize,
+  changeBrightness,
+  changeSpecialTitleSize,
+  changeLyricFontSize,
+  setProfessional,
+  changeAuthorSize,
+} = useSpecial();
+
+let lyricBox, timer, timer1, timer2, timer3, timer4, timer5, timer6;
+let gsapArr = [];
 
 const {
   getMusicInfo,
@@ -17,15 +32,21 @@ const {
   getCurrentLyticIndex,
   getShowLyricBoard,
   getLyricType,
+  isClickLyric,
 } = storeToRefs(music());
 
 const replaceUrl = ref("");
 const fileList = ref([]);
-const brightness = ref(0.3);
 const showControl = ref(false);
 const isMobile = ref(false);
+const isScroll = ref(false);
 
 const play = () => {
+  if (getIsPaused.value) {
+    pauseNeedClearTransform(false);
+  } else {
+    pauseNeedClearTransform(true);
+  }
   music().togglePlay();
 };
 
@@ -39,24 +60,47 @@ const next = async () => {
   music().setNext(true);
 };
 
-const scrollToMiddle = () => {
+const lyricScroll = () => {
+  isScroll.value = true;
+
+  if (timer6) {
+    clearTimeout(timer6);
+    timer6 = null;
+  }
+  timer6 = setTimeout(() => {
+    isScroll.value = false;
+  }, 1000);
+};
+
+const scrollToMiddle = (duration = 0) => {
   nextTick(() => {
-    let current = document.getElementById("currentLyticIndex");
+    if (isClickLyric.value) {
+      isScroll.value = false;
+    }
+    if (isScroll.value) {
+      return;
+    }
+    if (timer) {
+      clearTimeout(timer5);
+    }
+    timer5 = setTimeout(() => {
+      let current = document.getElementById("currentLyticIndex");
 
-    if (!current) return;
+      if (!current) return;
 
-    let h = current
-      ? current.offsetTop -
-        Math.round(lyricBox.clientHeight / 2) +
-        Math.round(current.offsetHeight / 2) +
-        -30
-      : 0;
+      let h = current
+        ? current.offsetTop -
+          Math.round(lyricBox.clientHeight / 2) +
+          Math.round(current.offsetHeight / 2) +
+          -30
+        : 0;
 
-    lyricBox &&
-      lyricBox.scrollTo({
-        top: h,
-        behavior: "smooth",
-      });
+      lyricBox &&
+        lyricBox.scrollTo({
+          top: h,
+          behavior: "smooth",
+        });
+    }, duration);
   });
 };
 
@@ -78,24 +122,9 @@ const toggleLyricType = (type) => {
 
   if (type == "COMMON") {
     nextTick(() => {
-      scrollToMiddle();
+      scrollToMiddle(300);
     });
-  } else {
-    gsapTransLyric(".special-title", 0.8);
-    animateTitle();
   }
-};
-
-const animateTitle = () => {
-  nextTick(() => {
-    if (timer3) {
-      clearTimeout(timer3);
-      timer3 = null;
-    }
-    timer3 = setTimeout(() => {
-      gsapTransLyric(".special-title", 0.8, true);
-    }, 3600);
-  });
 };
 
 const calcLyricDuration = () => {
@@ -104,8 +133,8 @@ const calcLyricDuration = () => {
 
   const duration = nextTime - currentTime;
 
-  const fromDuration = duration >= 1500 ? 1.2 : 0;
-  const leaveDuration = duration >= 1500 ? 0.3 : 0;
+  const fromDuration = duration >= 1000 ? 0.8 : duration >= 1500 ? 1.2 : 0;
+  const leaveDuration = duration >= 1000 ? 0.4 : duration > 1500 ? 0.6 : 0;
 
   return {
     duration,
@@ -115,23 +144,29 @@ const calcLyricDuration = () => {
 };
 
 const animateSpecial = () => {
+  if (getIsPaused.value) return;
+  gsapArr = [];
   const { duration, fromDuration, leaveDuration } = calcLyricDuration();
 
-  if (!duration || duration < 1500) {
+  if (!duration || duration < 1000) {
     document.querySelector(".special-lyric").style.opacity = 1;
     if (timer) {
       clearTimeout(timer);
     }
-    timer = setTimeout(() => {
-      document.querySelector(".special-lyric").style.opacity = 0;
-    }, duration - 200);
+    timer = setTimeout(
+      () => {
+        document.querySelector(".special-lyric").style.opacity = 0;
+      },
+      duration > 500 ? duration - 200 : duration
+    );
   } else {
     if (timer1) {
       clearTimeout(timer1);
       timer1 = null;
     }
     timer1 = setTimeout(() => {
-      gsapTransLyric(".special-lyric", fromDuration);
+      let g = gsapTransLyric(".special-lyric", fromDuration);
+      gsapArr.push(g);
     });
     if (timer2) {
       clearTimeout(timer2);
@@ -139,10 +174,26 @@ const animateSpecial = () => {
     }
     timer2 = setTimeout(
       () => {
-        gsapTransLyric(".special-lyric", leaveDuration, true);
+        if (getIsPaused.value) return;
+        gsapTransLyric(
+          ".special-lyric",
+          leaveDuration,
+          true,
+          document.querySelector(".special-lyric")
+        );
       },
       duration - leaveDuration * 1000
     );
+
+    if (timer3) {
+      clearTimeout(timer3);
+      timer3 = null;
+    }
+    timer3 = setTimeout(() => {
+      let calcDuration = duration - 500;
+      let g = gsapTransLyricLeftToRight(".special-lyric", calcDuration / 1000);
+      gsapArr.push(g);
+    });
   }
 };
 
@@ -155,17 +206,6 @@ const closeBoard = () => {
 
 const toggleDisc = () => {
   music().setIsShow();
-};
-const changeBrightness = (flag) => {
-  if (flag) {
-    if (brightness.value < 1) {
-      brightness.value += 0.1;
-    }
-  } else {
-    if (brightness.value > 0.1) {
-      brightness.value -= 0.1;
-    }
-  }
 };
 
 const resize = debounce(() => {
@@ -198,6 +238,22 @@ const mouseLeave = () => {
   }, 2000);
 };
 
+const toSetProfessional = () => {
+  setProfessional();
+};
+
+const pauseNeedClearTransform = (isStop) => {
+  if (isStop) {
+    gsapArr.forEach((v) => {
+      v && v.pause();
+    });
+  } else {
+    gsapArr.forEach((v) => {
+      v && v.play();
+    });
+  }
+};
+
 watch(
   () => getCurrentLyticIndex.value,
   () => {
@@ -216,40 +272,11 @@ watch(
   (newV) => {
     if (newV) {
       nextTick(() => {
-        scrollToMiddle();
+        scrollToMiddle(300);
       });
     } else {
       showControl.value = false;
     }
-  }
-);
-watch(
-  () => getMusicInfo.value.id,
-  (newV) => {
-    if (getLyricType.value == "SPECIAL") {
-      if (newV) {
-        gsapTransLyric(".special-title", 0.8);
-        animateTitle();
-      }
-    }
-  }
-);
-
-watch(
-  () => getIsPaused.value,
-  (newV) => {
-    if (getLyricType.value == "SPECIAL") {
-      if (newV) {
-        gsapTransLyric(".special-title", 0.5);
-        clearTimeout(timer2);
-        timer2 = null;
-      } else {
-        animateTitle();
-      }
-    }
-  },
-  {
-    immediate: true,
   }
 );
 
@@ -264,10 +291,14 @@ onBeforeUnmount(() => {
   clearTimeout(timer1);
   clearTimeout(timer2);
   clearTimeout(timer3);
+  clearTimeout(timer4);
+  clearTimeout(timer5);
   timer = null;
   timer1 = null;
   timer2 = null;
   timer3 = null;
+  timer4 = null;
+  timer5 = null;
   window.removeEventListener("resize", resize);
 });
 </script>
@@ -276,8 +307,11 @@ onBeforeUnmount(() => {
   <div
     :class="['lyric-mask', getShowLyricBoard ? 'lyric-mask-show' : 'lyric-mask-hide']"
     :style="{
+      background: replaceUrl ? '' : bg ? '#000' : '',
       backgroundImage:
-        getLyricType == 'SPECIAL' ? `url(${replaceUrl || getMusicDescription.al.picUrl})` : '',
+        getLyricType == 'SPECIAL'
+          ? `url(${replaceUrl || bg || getMusicDescription.al.picUrl})`
+          : '',
     }"
   >
     <div
@@ -307,7 +341,8 @@ onBeforeUnmount(() => {
           />
         </div>
       </div>
-      <div id="lyricBox" class="right">
+
+      <div id="lyricBox" class="right" @scroll="lyricScroll">
         <div class="!p-[10px]">
           <div>
             <div class="text-2xl leading-loose text-center">
@@ -331,27 +366,55 @@ onBeforeUnmount(() => {
       class="special !w-[100%] !h-[100%] flex flex-col justify-center items-center"
     >
       <div class="special-title">
-        <SpecialTitle :title="`《 ${getMusicDescription?.name} 》`" @click="fullScreen" />
+        <div class="flex items-center justify-center">
+          <span class="small-action" @click="changeSpecialTitleSize(false)"></span>
+          <SpecialTitle
+            :size="specialTitleSize"
+            :title="getMusicDescription?.name"
+            :is-special="!!bg"
+            @click="fullScreen"
+          />
+          <span class="small-action" @click="changeSpecialTitleSize(true)"></span>
+        </div>
 
-        <div class="author text-2xl">
-          <span class="brightness" @click="changeBrightness(false)"></span> --
-          {{ getMusicDescription?.ar[0]?.name }}
-          <span class="brightness" @click="changeBrightness(true)"></span>
+        <div
+          class="author"
+          :style="{ fontSize: authorName + 'rem', fontWeight: !!bg ? '300' : '' }"
+        >
+          <span class="small-action" @click="changeAuthorSize(false)"></span>
+          <span @click="changeBrightness(false)">{{ getMusicDescription?.ar[0]?.name }}</span>
+          <span class="small-action" @click="changeAuthorSize(true)"></span>
         </div>
       </div>
-      <span class="special-lyric text-3xl">
-        {{ getMusicInfo.lyricList[getCurrentLyticIndex] }}
-      </span>
+      <div class="flex justify-center items-start">
+        <span class="small-action" @click="changeLyricFontSize(false)"></span>
+        <span
+          class="special-lyric"
+          :style="{ fontSize: specialLyricSize + 'rem', fontWeight: !!bg ? '300' : '' }"
+        >
+          {{ getMusicInfo.lyricList[getCurrentLyticIndex] }}
+        </span>
+        <span class="small-action" @click="changeLyricFontSize(true)"></span>
+      </div>
     </div>
 
     <div class="bottom-control" @mouseenter="mouseEnter" @mouseleave="mouseLeave">
       <div
         :class="[
           'control',
-          isMobile || getIsPaused || showControl ? 'show-control' : 'hide-control',
+          getLyricType == 'COMMON' || isMobile || getIsPaused || showControl
+            ? 'show-control'
+            : 'hide-control',
         ]"
       >
-        <i class="close-board iconfont icon-arrowdown change-color" @click="closeBoard"></i>
+        <div class="close-board">
+          <i class="iconfont icon-arrowdown change-color mr-[10px]" @click="closeBoard"></i>
+          <i
+            v-show="getLyricType == 'SPECIAL'"
+            class="iconfont icon-paper change-color"
+            @click="toSetProfessional"
+          ></i>
+        </div>
         <div class="control-group">
           <i class="iconfont icon-shangyiqu change-color" @click="prev"></i>
           <i class="iconfont icon-zanting change-color" v-if="getIsPaused" @click="play"></i>
@@ -440,35 +503,42 @@ onBeforeUnmount(() => {
 }
 .special {
   &-title {
+    text-align: center;
     color: var(--global-white);
     cursor: pointer;
     z-index: 2;
-    height: 180px;
+    min-height: 150px;
+    margin-bottom: 20px;
+  }
+
+  &-lyric {
+    color: var(--global-white);
+    text-align: center;
+    z-index: 2;
+    min-height: 80px;
+    // prettier-ignore
+    background: #aaaaaa -webkit-linear-gradient(left, #fff, #fff) no-repeat 0 0;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-size: 0% 100%;
   }
 
   .author {
-    line-height: 2.8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 2.2;
     color: var(--global-white);
-    text-shadow: 0px 0px 5px var(--global-white);
     cursor: pointer;
     text-align: center;
   }
 
-  .brightness {
+  .small-action {
+    z-index: 1;
     cursor: pointer;
     display: inline-block;
-    width: 20px;
-    height: 20px;
-  }
-
-  .special-lyric {
-    color: var(--global-white);
-    text-align: center;
-    z-index: 2;
-    font-smooth: never;
-    height: 60px;
-    line-height: 60px;
-    text-shadow: 0px 0px 5px var(--global-white);
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -511,6 +581,9 @@ onBeforeUnmount(() => {
     left: 50px;
     top: 50%;
     transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .toggle-type {
@@ -654,7 +727,7 @@ onBeforeUnmount(() => {
   opacity: 0.5;
 }
 .current {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   opacity: 1;
 }
