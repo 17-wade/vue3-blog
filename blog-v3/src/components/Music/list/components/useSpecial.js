@@ -52,7 +52,7 @@ function useSpecialHooks() {
         specialLyricSize.value += 0.1;
       }
     } else {
-      if (specialLyricSize.value >= 2) {
+      if (specialLyricSize.value >= 1) {
         specialLyricSize.value -= 0.1;
       }
     }
