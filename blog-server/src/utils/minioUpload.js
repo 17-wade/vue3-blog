@@ -7,13 +7,17 @@ let minioClient;
 
 if (UPLOADTYPE == "minio") {
   if (MINIO_PATH && MINIO_ACCESSKEY && MINIO_SECRETKEY) {
-    minioClient = new Minio.Client({
-      endPoint: MINIO_PATH,
-      port: 9000,
-      useSSL: false,
-      accessKey: MINIO_ACCESSKEY,
-      secretKey: MINIO_SECRETKEY,
-    });
+    try {
+      minioClient = new Minio.Client({
+        endPoint: MINIO_PATH,
+        port: 9000,
+        useSSL: false,
+        accessKey: MINIO_ACCESSKEY,
+        secretKey: MINIO_SECRETKEY,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   } else {
     console.error("请在env里完善minio配置项");
   }
@@ -76,17 +80,21 @@ function deleteMinioImgs(imgList) {
 }
 // 上传文件
 const minioUpload = async (filePath) => {
-  const exist = await bucketExists();
-  if (!exist) {
-    console.log("bucket不存在");
-    return;
-  }
+  try {
+    const exist = await bucketExists();
+    if (!exist) {
+      console.log("bucket不存在");
+      return;
+    }
 
-  const url = await upload(filePath);
-  if (url) {
-    return url;
-  } else {
-    return false;
+    const url = await upload(filePath);
+    if (url) {
+      return url;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 

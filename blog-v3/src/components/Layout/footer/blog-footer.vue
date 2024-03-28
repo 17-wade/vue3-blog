@@ -13,7 +13,7 @@
         target="_blank"
       >
         <img
-          src="https://img.shields.io/badge/%E9%98%BF%E9%87%8C%E4%BA%91-%E8%BD%BB%E9%87%8F%E6%9C%8D%E5%8A%A1%E5%99%A8-orange"
+          src="https://img.shields.io/badge/%E9%98%BF%E9%87%8C%E4%BA%91-ECS%E6%9C%8D%E5%8A%A1%E5%99%A8-orange"
           alt=""
       /></a>
       <a class="p-[3px]" href="https://imzbf.github.io/md-editor-v3/docs/index" target="_blank">
