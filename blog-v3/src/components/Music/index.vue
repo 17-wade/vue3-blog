@@ -4,44 +4,57 @@
 * @Description: 播放器首页
 -->
 <script setup>
+import { defineComponent, ref, watch, provide, onBeforeUnmount } from "vue";
+
 import MusicList from "./list/index.vue";
 import MusicControl from "./controls/index.vue";
-import { defineComponent, ref, watch } from "vue";
 import blogAvatar from "@/assets/img/blogAvatar.png";
+import useMusic from "./useMusic.js";
 
 import { useRoute } from "vue-router";
-import { music } from "@/store/index";
-import { storeToRefs } from "pinia";
-
-const route = useRoute();
-const { getIsShow, getShowLyricBoard, getIsPaused, getIsToggleImg, getMusicDescription } =
-  storeToRefs(music());
 
 defineComponent({
   name: "MusicPlayer",
 });
 
+const { musicGetters, musicSetters, removeAudio, saveMusicInfo } = useMusic();
+
+provide("musicSetters", musicSetters);
+provide("musicGetters", musicGetters);
+
+const {
+  getIsShowMusicPlayer,
+  getShowLyricBoard,
+  getIsPaused,
+  getIsToggleImg,
+  getMusicDescription,
+} = musicGetters;
+const { setIsShow, togglePlay, setShowLyricBoard, setLyricType } = musicSetters;
+
+const route = useRoute();
+
 // 页面初始化播放器隐藏的时候不要做动画
 const clickFlag = ref(false);
 
 const toggleDisc = () => {
-  music().setIsShow();
+  // setIsShow();
+  setIsShow();
   if (!clickFlag.value) {
     clickFlag.value = true;
   }
 };
 
 const playMusic = () => {
-  music().togglePlay();
+  togglePlay();
 };
 
 watch(
   () => route.query.showSpecial,
   (newV) => {
     if (newV) {
-      music().setIsShow(true);
-      music().setShowLyricBoard(true);
-      music().setLyricType("SPECIAL");
+      setIsShow(true);
+      setShowLyricBoard(true);
+      setLyricType("SPECIAL");
     }
   },
   {
@@ -51,7 +64,7 @@ watch(
 
 // 在弹出遮罩层的时候 让body不能滚动
 watch(
-  () => getIsShow.value,
+  () => getIsShowMusicPlayer.value,
   (newV) => {
     if (newV) {
       document.documentElement.style.overflowY = "hidden";
@@ -63,11 +76,23 @@ watch(
     immediate: true,
   }
 );
+
+onBeforeUnmount(() => {
+  removeAudio();
+});
+// 用户关闭浏览器前保存信息
+window.addEventListener("beforeunload", () => {
+  saveMusicInfo();
+});
 </script>
 
 <template>
   <div
-    :class="['music', getIsShow ? 'show-music' : '', !getIsShow && clickFlag ? 'hide-music' : '']"
+    :class="[
+      'music',
+      getIsShowMusicPlayer ? 'show-music' : '',
+      !getIsShowMusicPlayer && clickFlag ? 'hide-music' : '',
+    ]"
   >
     <div class="flex justify-center items-center !w-[100%] !h-[100%]">
       <div class="music-box flex flex-col justify-center items-center">
@@ -83,7 +108,7 @@ watch(
       </div>
     </div>
   </div>
-  <div v-if="!getIsShow" :class="['music-disc', getIsPaused ? 'music-left' : '']">
+  <div v-if="!getIsShowMusicPlayer" :class="['music-disc', getIsPaused ? 'music-left' : '']">
     <img
       @click="toggleDisc"
       :class="['music-img', getIsToggleImg ? '' : 'disc-rotate', getIsPaused ? 'paused' : '']"

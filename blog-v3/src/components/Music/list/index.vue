@@ -1,15 +1,16 @@
 <script setup>
-import { defineComponent, onMounted, watch, ref, reactive, onBeforeUnmount, h } from "vue";
+import { defineComponent, onMounted, watch, ref, reactive, onBeforeUnmount, h, inject } from "vue";
 
-import { music } from "@/store/index";
 import { reqToplist, reqTopDetaliList } from "@/api/music";
 import { PLAYTYPE } from "../musicTool";
-import { storeToRefs } from "pinia";
 import { ElNotification } from "element-plus";
 import SearchList from "./components/search-list.vue";
 import LyricBoard from "./components/lyric-board.vue";
 
-const { getCustomerMusicList } = storeToRefs(music());
+const musicGetters = inject("musicGetters");
+const musicSetters = inject("musicSetters");
+
+const { getCustomerMusicList } = musicGetters;
 
 const topList = ref([]);
 
@@ -69,7 +70,7 @@ const reqTopMusicList = async (id) => {
       }
       currentMusicList.value =
         params.offset == 0 ? res.songs : currentMusicList.value.concat(res.songs);
-      music().setMusicList(currentMusicList.value);
+      musicSetters.setMusicList(currentMusicList.value);
       observeBox();
     }
   } finally {
@@ -100,8 +101,8 @@ const observeBox = () => {
 
 const playMusic = (item) => {
   // 设置当前音乐信息
-  music().setMusicInfo(item.id);
-  music().setPlayType(PLAYTYPE.TOP);
+  musicSetters.setMusicInfo(item.id);
+  musicSetters.setPlayType(PLAYTYPE.TOP);
 };
 
 // 切换排行榜置空数据
@@ -111,15 +112,15 @@ const clickTopMusicList = (item) => {
   params.offset = 0;
   params.loadMore = true;
   currentMusicList.value = [];
-  music().setMusicList([]);
+  musicSetters.setMusicList([]);
   reqTopMusicList();
 };
 
 // 添加歌曲
 const customerAddMusic = (item) => {
   if (isActive(item.id)) return;
-  music().setCustomerMusicList("add", item);
-  music().setPlayType(PLAYTYPE.CUSTOM);
+  musicSetters.setCustomerMusicList("add", item);
+  musicSetters.setPlayType(PLAYTYPE.CUSTOM);
   ElNotification({
     offset: 60,
     title: "提示",

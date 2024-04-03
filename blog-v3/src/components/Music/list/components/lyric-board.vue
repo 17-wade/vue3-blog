@@ -1,12 +1,13 @@
 <script setup>
-import { watch, onMounted, onBeforeUnmount, nextTick, ref } from "vue";
-import { music } from "@/store";
-import { storeToRefs } from "pinia";
+import { watch, onMounted, onBeforeUnmount, nextTick, ref, inject } from "vue";
 import { gsapTransLyric, gsapTransLyricLeftToRight } from "@/utils/transform";
 
 import SpecialTitle from "./special-title.vue";
 import { debounce } from "@/utils/tool";
 import useSpecial from "./useSpecial";
+
+const musicSetters = inject("musicSetters");
+const musicGetters = inject("musicGetters");
 
 const {
   bg,
@@ -29,11 +30,11 @@ const {
   getIsToggleImg,
   getMusicDescription,
   getIsPaused,
-  getCurrentLyticIndex,
+  getCurrentLyricIndex,
   getShowLyricBoard,
   getLyricType,
-  isClickLyric,
-} = storeToRefs(music());
+  getIsClickLyric,
+} = musicGetters;
 
 const replaceUrl = ref("");
 const fileList = ref([]);
@@ -43,21 +44,22 @@ const isScroll = ref(false);
 
 const play = () => {
   if (getIsPaused.value) {
+    // 对字体动画进行暂停
     pauseNeedClearTransform(false);
   } else {
     pauseNeedClearTransform(true);
   }
-  music().togglePlay();
+  musicSetters.togglePlay();
 };
 
 // 上一首
 const prev = async () => {
-  music().setNext(false);
+  musicSetters.setNext(false);
 };
 
 // 下一首
 const next = async () => {
-  music().setNext(true);
+  musicSetters.setNext(true);
 };
 
 const lyricScroll = () => {
@@ -74,7 +76,7 @@ const lyricScroll = () => {
 
 const scrollToMiddle = (duration = 0) => {
   nextTick(() => {
-    if (isClickLyric.value) {
+    if (getIsClickLyric.value) {
       isScroll.value = false;
     }
     if (isScroll.value) {
@@ -84,7 +86,7 @@ const scrollToMiddle = (duration = 0) => {
       clearTimeout(timer5);
     }
     timer5 = setTimeout(() => {
-      let current = document.getElementById("currentLyticIndex");
+      let current = document.getElementById("getCurrentLyricIndex");
 
       if (!current) return;
 
@@ -114,11 +116,11 @@ const fullScreen = () => {
 };
 
 const goToIndex = (index) => {
-  music().setCurrentTimeByClickLyric(index);
+  musicSetters.setCurrentTimeByClickLyric(index);
 };
 
 const toggleLyricType = (type) => {
-  music().setLyricType(type);
+  musicSetters.setLyricType(type);
 
   if (type == "COMMON") {
     nextTick(() => {
@@ -128,8 +130,8 @@ const toggleLyricType = (type) => {
 };
 
 const calcLyricDuration = () => {
-  const nextTime = getMusicInfo.value.lyricTimeList[getCurrentLyticIndex.value + 1];
-  const currentTime = getMusicInfo.value.lyricTimeList[getCurrentLyticIndex.value];
+  const nextTime = getMusicInfo.value.lyricTimeList[getCurrentLyricIndex.value + 1];
+  const currentTime = getMusicInfo.value.lyricTimeList[getCurrentLyricIndex.value];
 
   const duration = nextTime - currentTime;
 
@@ -201,11 +203,11 @@ const replaceImage = (file) => {
   replaceUrl.value = URL.createObjectURL(file.raw);
 };
 const closeBoard = () => {
-  music().setShowLyricBoard(false);
+  musicSetters.setShowLyricBoard(false);
 };
 
 const toggleDisc = () => {
-  music().setIsShow();
+  musicSetters.setIsShow();
 };
 
 const resize = debounce(() => {
@@ -255,7 +257,7 @@ const pauseNeedClearTransform = (isStop) => {
 };
 
 watch(
-  () => getCurrentLyticIndex.value,
+  () => getCurrentLyricIndex.value,
   () => {
     if (getLyricType.value == "COMMON") {
       scrollToMiddle();
@@ -350,8 +352,8 @@ onBeforeUnmount(() => {
             </div>
           </div>
           <div
-            :id="getCurrentLyticIndex == index ? 'currentLyticIndex' : ''"
-            :class="['lyric-word', getCurrentLyticIndex == index ? 'current' : '']"
+            :id="getCurrentLyricIndex == index ? 'getCurrentLyricIndex' : ''"
+            :class="['lyric-word', getCurrentLyricIndex == index ? 'current' : '']"
             v-for="(item, index) in getMusicInfo.lyricList"
             :key="index"
             @click="goToIndex(index)"
@@ -392,7 +394,7 @@ onBeforeUnmount(() => {
           class="special-lyric"
           :style="{ fontSize: specialLyricSize + 'rem', fontWeight: !!bg ? '300' : '' }"
         >
-          {{ getMusicInfo.lyricList[getCurrentLyticIndex] }}
+          {{ getMusicInfo.lyricList[getCurrentLyricIndex] }}
         </span>
         <span class="small-action" @click="changeLyricFontSize(true)"></span>
       </div>

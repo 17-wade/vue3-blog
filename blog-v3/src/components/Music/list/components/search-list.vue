@@ -1,17 +1,18 @@
 <script setup>
-import { defineComponent, h, ref, reactive } from "vue";
+import { defineComponent, h, ref, reactive, inject } from "vue";
 
-import { music } from "@/store/index";
 import { PLAYTYPE } from "../../musicTool";
 import { ElNotification } from "element-plus";
 import { reqSearch, reqSearchSingerHot } from "@/api/music";
-import { storeToRefs } from "pinia";
 
 defineComponent({
   name: "CustomMusicList",
 });
 
-const { getCustomerMusicList } = storeToRefs(music());
+const musicGetters = inject("musicGetters");
+const musicSetters = inject("musicSetters");
+
+const { getCustomerMusicList } = musicGetters;
 const keyWords = ref(""); // 搜索关键词
 const searchList = ref([]); // 搜索列表
 const singer = ref("");
@@ -26,7 +27,7 @@ const params = reactive({
 
 const playMusic = (item) => {
   // 设置当前播放音乐
-  music().setMusicInfo(item.id, false);
+  musicSetters.setMusicInfo(item.id, false);
 };
 
 // 判断当前歌曲是否在用户定制列表中
@@ -44,8 +45,8 @@ const isActive = (id) => {
 // 添加歌曲
 const customerAddMusic = (item) => {
   if (isActive(item.id)) return;
-  music().setCustomerMusicList("add", item);
-  music().setPlayType(PLAYTYPE.CUSTOM);
+  musicSetters.setCustomerMusicList("add", item);
+  musicSetters.setPlayType(PLAYTYPE.CUSTOM);
 
   searchList.value.forEach((song) => {
     song.active = isActive(song.id);
