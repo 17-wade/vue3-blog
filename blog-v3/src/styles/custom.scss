@@ -88,23 +88,46 @@ svg {
 }
 
 .apply-button {
+  position: relative;
   display: inline-block;
   padding: 5px 20px;
   background-color: transparent;
   box-sizing: border-box;
-  border-radius: 20px;
+  border-radius: 8px;
   font-weight: 900;
   font-size: 16px;
-  border: 3px solid var(--global-white);
+  background-image: var(--button-linear-gradient);
   color: var(--global-white);
-  transition: 0.5s;
+  transition: all 0.6s;
   cursor: pointer;
-
+  border: none;
+  z-index: 1;
   &:hover {
     transform: translateY(-3px);
-    color: var(--primary);
-    border: 3px solid var(--primary);
   }
+}
+
+.apply-button:hover::before {
+  opacity: 1;
+}
+
+.apply-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  border-radius: 8px;
+  z-index: -1;
+  transition: opacity 0.6s ease-in-out;
+  background-image: var(--button-linear-gradient-h);
+}
+
+.avatar-font {
+  font-weight: bold;
+  color: var(--global-white);
 }
 
 .list-enter-active,

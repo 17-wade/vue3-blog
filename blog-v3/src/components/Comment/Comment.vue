@@ -204,37 +204,35 @@ defineExpose({
         <span v-else class="more" @click="toggleExpand"> 取消发布 </span>
       </template>
     </div>
-    <div
-      v-if="isExpand"
-      id="commentInput"
-      class="!mt-[1rem] w-[100%] flex justify-start items-start"
-    >
-      <div class="avatar-box">
-        <el-avatar class="avatar" :src="userStore.getUserInfo.avatar" @click="toLogin">{{
-          userStore.getUserInfo.nick_name || "登录"
-        }}</el-avatar>
+    <div v-if="isExpand">
+      <div id="commentInput" class="!mt-[1rem] w-[100%] flex justify-start items-start">
+        <div class="avatar-box">
+          <el-avatar class="avatar" :src="userStore.getUserInfo.avatar" @click="toLogin">{{
+            userStore.getUserInfo.nick_name || "登录"
+          }}</el-avatar>
+        </div>
+        <div class="!w-[100%] !ml-[10px]">
+          <CommentInput
+            ref="commentInputRef"
+            v-model:inputText="commentText"
+            :show-publish-button="false"
+            :parent="true"
+            @publish="publish"
+          />
+        </div>
       </div>
-      <div class="!w-[100%] !ml-[10px]">
-        <CommentInput
-          ref="commentInputRef"
-          v-model:inputText="commentText"
-          :show-publish-button="false"
-          :parent="true"
-          @publish="publish"
+      <!-- 评论组件 这里采用了父级评论和子级评论嵌套的方式 -->
+      <div class="comment-list">
+        <ParentItem
+          v-if="isExpand"
+          ref="parentItemRef"
+          :active="activeOrder"
+          :type="type"
+          :id="id"
+          :author-id="authorId"
+          @refresh="refresh"
         />
       </div>
-    </div>
-    <!-- 评论组件 这里采用了父级评论和子级评论嵌套的方式 -->
-    <div class="comment-list">
-      <ParentItem
-        v-if="isExpand"
-        ref="parentItemRef"
-        :active="activeOrder"
-        :type="type"
-        :id="id"
-        :author-id="authorId"
-        @refresh="refresh"
-      />
     </div>
   </div>
 </template>

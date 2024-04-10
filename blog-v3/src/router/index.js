@@ -113,22 +113,6 @@ const routes = [
             },
             component: () => import("@/views/links/link-list.vue"),
           },
-          {
-            path: "apply",
-            name: "LinkApply",
-            meta: {
-              name: "友链申请",
-            },
-            component: () => import("@/views/links/link-apply.vue"),
-          },
-          {
-            path: "update",
-            name: "LinkUpdate",
-            meta: {
-              name: "友链修改",
-            },
-            component: () => import("@/views/links/link-apply.vue"),
-          },
         ],
       },
       {
@@ -178,8 +162,6 @@ const routes = [
         meta: {
           name: "留言",
         },
-        // component: () => import("@/views/message/index.vue"),
-
         children: [
           {
             path: "list",
@@ -209,23 +191,6 @@ const routes = [
         ],
       },
     ],
-  },
-
-  {
-    path: "/login",
-    name: "Login",
-    meta: {
-      name: "用户登录",
-    },
-    component: () => import("@/views/user/login-register.vue"),
-  },
-  {
-    path: "/register",
-    name: "Register",
-    meta: {
-      name: "用户注册",
-    },
-    component: () => import("@/views/user/login-register.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick } from "vue";
-import { user } from "@/store/index.js";
+import { user, staticData } from "@/store/index.js";
 
 import { homeGetArticleList } from "@/api/article";
 import { homeGetConfig } from "@/api/config";
@@ -17,6 +17,7 @@ import RightSideSkeletonItem from "@/components/RightSide/components/skeleton/ri
 import { gsapTransY } from "@/utils/transform";
 
 const userStore = user();
+const staticStore = staticData();
 
 /** 文章 */
 const param = reactive({
@@ -59,6 +60,7 @@ const getConfigDetail = async () => {
       configDetail.value = res.result;
       userStore.setBlogAvatar(res.result.blog_avatar);
       calcRuntimeDays(configDetail.value.createdAt);
+      staticStore.setBlogConfig(res.result);
     }
   } finally {
     rightSizeLoading.value = false;

@@ -20,53 +20,12 @@ html.dark {
     border: none !important;
     font-weight: 600 !important;
     color: var(--global-white) !important;
-    background: linear-gradient(
-      90deg,
-      #413939 1%,
-      #483e48 10.2%,
-      #4b4552 19.6%,
-      #3a3a45 36.8%,
-      #364040 62.2%,
-      #3b4146 88.9%,
-      #4a4242 99%
-    ) !important;
+    background: var(--dark-global-gradient) !important;
     z-index: 9999 !important;
   }
 
   .el-avatar {
-    background: linear-gradient(
-      90deg,
-      #584f4f 1%,
-      #605360 10.2%,
-      #685f71 19.6%,
-      #5e5e71 36.8%,
-      #526161 62.2%,
-      #5d666e 88.9%,
-      #726262 99%
-    ) !important;
-  }
-
-  .el-collapse-item__header {
-    padding: 0 10px;
-    background: linear-gradient(
-      90deg,
-      #483e48 10.2%,
-      #4b4552 19.6%,
-      #3a3a45 36.8%,
-      #364040 62.2%,
-      #3b4146 88.9%
-    ) !important;
-  }
-
-  .el-collapse-item__content {
-    background: linear-gradient(
-      90deg,
-      #483e48 10.2%,
-      #4b4552 19.6%,
-      #3a3a45 36.8%,
-      #364040 62.2%,
-      #3b4146 88.9%
-    ) !important;
+    background-image: var(--dark-button-linear-gradient);
   }
 
   .el-slider__runway {
@@ -80,16 +39,7 @@ html.dark {
   // --------- element end --------  //
 
   .layout {
-    background: linear-gradient(
-      90deg,
-      #413939 1%,
-      #483e48 10.2%,
-      #4b4552 19.6%,
-      #3a3a45 36.8%,
-      #364040 62.2%,
-      #3b4146 88.9%,
-      #4a4242 99%
-    ) !important;
+    background: var(--dark-global-gradient) !important;
   }
 
   .info-avatar {
@@ -104,6 +54,10 @@ html.dark {
 
   .photoList-card {
     background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .album-current {
+    box-shadow: 0 0 8px var(--global-white) !important;
   }
 
   .common-menu__label,
@@ -148,7 +102,7 @@ html.dark {
   }
 
   .page-header::before {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.7);
   }
 
   .page-header .toggle-theme .theme-card-dropdown {
@@ -187,27 +141,25 @@ html.dark {
   }
 
   .gradient {
-    background: linear-gradient(120deg, #d5d8d8, #cfe5ea, #e4d1ec, #d1e0f5, #e8e8c5, #f1f1e2);
-  }
-
-  .apply-button {
-    background: transparent;
+    background: var(--dark-global-gradient);
   }
 
   .leave-message,
   .apply-link {
     color: var(--global-white);
   }
+  .message-active-tab {
+    background-image: var(--dark-button-linear-gradient) !important;
+  }
+  .search-tab {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
 
-  .button-bg {
-    color: var(--global-white) !important;
-    background-color: var(--font-color) !important;
-    border: 3px solid var(--font-color) !important;
-
-    &:hover {
-      border: 3px solid var(--dark-font-color) !important;
-      background-color: var(--dark-font-color) !important;
-    }
+  .apply-button {
+    background-image: var(--dark-button-linear-gradient);
+  }
+  .apply-button::before {
+    background-image: var(--dark-button-linear-gradient-h);
   }
 
   .login-register-bg {
@@ -277,10 +229,6 @@ html.dark {
     border-bottom: 1px solid var(--dark-font-color);
   }
 
-  .avatar-font {
-    color: var(--primary);
-  }
-
   .category-item .left .bottom {
     background: rgba(0, 0, 0, 0.1);
   }
@@ -288,13 +236,7 @@ html.dark {
     background: rgba(0, 0, 0, 0.1);
   }
 
-  .apply-button {
-    color: var(--dark-font-color);
-    border: 3px solid var(--dark-font-color);
-  }
-
   // 音乐 ------ start --------- //
-
   .music {
     background-color: rgba(255, 255, 255, 0.1);
   }

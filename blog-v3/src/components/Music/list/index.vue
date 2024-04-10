@@ -175,18 +175,23 @@ onBeforeUnmount(() => {
     <div class="!max-w-[1024px] !w-[100%] flex md:justify-between justify-center items-start">
       <div class="music-list__left">
         <div class="header">分类歌单</div>
-        <el-row v-loading="musicListLoading" class="body">
-          <el-col
-            class="flex justify-center items-center overflow-auto"
-            :span="6"
-            v-for="item in topList"
-            :key="item.id"
-          >
-            <div class="top" @click="clickTopMusicList(item)">
-              <img class="top-bg" :src="item.coverImgUrl" />
-              <i class="iconfont icon-zanting play"></i>
-            </div>
-          </el-col>
+        <el-row class="body">
+          <div v-if="musicListLoading" class="!w-[100%] !h-[100%] grid place-content-center">
+            <Loading :size="48" />
+          </div>
+          <template v-else>
+            <el-col
+              class="flex justify-center items-center overflow-auto"
+              :span="6"
+              v-for="item in topList"
+              :key="item.id"
+            >
+              <div class="top" @click="clickTopMusicList(item)">
+                <img class="top-bg" :src="item.coverImgUrl" />
+                <i class="iconfont icon-zanting play"></i>
+              </div>
+            </el-col>
+          </template>
         </el-row>
       </div>
       <div class="music-list__right">
@@ -209,50 +214,55 @@ onBeforeUnmount(() => {
             <SearchList />
           </el-popover>
         </div>
-
         <el-row style="width: 100%">
           <el-col :span="24" class="header">
             <div class="title title1">歌曲</div>
             <div class="title title2">作者</div>
             <div class="title title3">其他</div>
+            <div class="title title4">操作</div>
           </el-col>
         </el-row>
-        <el-row v-loading="params.loading" class="body">
-          <el-col
-            class="flex justify-start items-center overflow-auto"
-            :span="24"
-            v-for="item in currentMusicList"
-            :key="item.id"
-          >
-            <div class="name" @click="playMusic(item)">
-              <span class="text-overflow" :title="item.name">{{ item.name }}</span>
-            </div>
-            <div class="author">
-              <span class="text-overflow" :title="item.ar[0].name">{{ item.ar[0].name }}</span>
-            </div>
-            <div class="other">
-              <span class="text-overflow" :title="item.alia[0]">{{ item.alia[0] }}</span>
-            </div>
-            <div class="add-music">
-              <i
-                :class="[
-                  'iconfont',
-                  'icon-tianjiadao',
-                  'change-color',
-                  item.active ? 'active' : '',
-                ]"
-                @click="customerAddMusic(item)"
-              ></i>
-            </div>
-          </el-col>
-          <div class="observe" @click="loadMore">
-            <template v-if="!params.loading">
-              <Loading :size="24" v-if="scrollLoading" />
-              <template v-else>
-                {{ params.loadMore ? "下拉/点击加载更多～" : "已经到底了" }}
-              </template>
-            </template>
+        <el-row class="body">
+          <div v-if="params.loading" class="!w-[100%] !h-[100%] grid place-content-center">
+            <Loading :size="48" />
           </div>
+          <template v-else>
+            <el-col
+              class="flex justify-start items-center overflow-auto"
+              :span="24"
+              v-for="item in currentMusicList"
+              :key="item.id"
+            >
+              <div class="name" @click="playMusic(item)">
+                <span class="text-overflow" :title="item.name">{{ item.name }}</span>
+              </div>
+              <div class="author">
+                <span class="text-overflow" :title="item.ar[0].name">{{ item.ar[0].name }}</span>
+              </div>
+              <div class="other">
+                <span class="text-overflow" :title="item.alia[0]">{{ item.alia[0] }}</span>
+              </div>
+              <div class="add-music">
+                <i
+                  :class="[
+                    'iconfont',
+                    'icon-tianjiadao',
+                    'change-color',
+                    item.active ? 'active' : '',
+                  ]"
+                  @click="customerAddMusic(item)"
+                ></i>
+              </div>
+            </el-col>
+            <div class="observe" @click="loadMore">
+              <template v-if="!params.loading">
+                <Loading :size="24" v-if="scrollLoading" />
+                <template v-else>
+                  {{ params.loadMore ? "下拉/点击加载更多～" : "已经到底了" }}
+                </template>
+              </template>
+            </div>
+          </template>
         </el-row>
       </div>
     </div>
@@ -290,6 +300,7 @@ onBeforeUnmount(() => {
       font-size: 1.2rem;
     }
     .body {
+      width: 100%;
       height: 100%;
       overflow: auto;
     }
@@ -321,11 +332,16 @@ onBeforeUnmount(() => {
         }
         &3 {
           overflow: hidden;
-          width: 25%;
+          width: 35%;
+        }
+        &4 {
+          overflow: hidden;
+          width: 15%;
         }
       }
     }
     .body {
+      width: 100%;
       height: 100%;
       overflow: auto;
     }

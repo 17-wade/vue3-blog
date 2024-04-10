@@ -87,7 +87,7 @@ watch(
     <el-popover
       ref="elPopoverRef"
       placement="top"
-      :width="400"
+      :width="350"
       :show-arrow="false"
       :teleported="false"
       trigger="click"

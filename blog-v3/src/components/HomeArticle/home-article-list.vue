@@ -90,7 +90,7 @@ watch(
       </el-col>
     </template>
     <template v-else>
-      <template v-if="articleList.length > 0">
+      <template v-if="articleList.length">
         <el-col
           :class="['article-col', 'article' + index]"
           v-for="(item, index) in articleList"
@@ -194,7 +194,7 @@ watch(
         </el-col>
       </template>
       <template v-else>
-        <div class="no-article">暂无文章，请博主到后台发布文章～</div>
+        <div class="no-article">暂无文章，请先到后台发布文章～</div>
       </template>
     </template>
     <Pagination
@@ -213,12 +213,16 @@ watch(
     width: 100%;
     height: 100%;
     vertical-align: bottom;
+    display: grid;
+    place-items: center;
   }
 }
 
 .no-article {
   color: var(--font-color);
-  margin: 10px auto;
+  width: 100%;
+  height: 80vh;
+  line-height: 80vh;
   font-size: 24px;
   font-weight: bold;
   text-align: center;

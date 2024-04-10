@@ -1,18 +1,20 @@
 <!--友链列表  -->
 <script setup>
-import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
+import { ref, reactive, onMounted, onBeforeUnmount, h } from "vue";
 import { getFriendLinks } from "@/api/links";
-import { useRouter } from "vue-router";
-import { Edit, Promotion } from "@element-plus/icons-vue";
-import { user } from "@/store/index.js";
+import { Edit } from "@element-plus/icons-vue";
+import { ElNotification } from "element-plus";
+
+import { user, staticData } from "@/store/index.js";
 import { storeToRefs } from "pinia";
 
 import SkeletonItem from "@/components/SkeletonItem/skeleton-item.vue";
+import linkApply from "./link-apply.vue";
 import { _removeLocalItem, _setLocalItem } from "@/utils/tool";
 
-const router = useRouter();
-const userStore = user();
-const { getUserInfo } = storeToRefs(userStore);
+const { getBlogConfig } = storeToRefs(staticData());
+const { getUserInfo } = storeToRefs(user());
+
 const active = ref(0);
 const activeType = ref("");
 const loading = ref(false);
@@ -25,6 +27,8 @@ const params = reactive({
 
 const linksList = ref([]);
 const total = ref(0);
+const dialogVisible = ref(false);
+const applyType = ref("add");
 let observe;
 let box;
 
@@ -44,7 +48,8 @@ const goToSite = (url) => {
 
 const updateLink = (item) => {
   _setLocalItem("blog-link-update", item);
-  router.push("/link/update");
+  dialogVisible.value = true;
+  applyType.value = "edit";
 };
 
 const observeBox = () => {
@@ -90,6 +95,19 @@ const pageGetLinksList = async () => {
   }
 };
 
+const applyLinks = () => {
+  if (getUserInfo.value.id) {
+    dialogVisible.value = true;
+    applyType.value = "add";
+  } else {
+    ElNotification({
+      offset: 60,
+      title: "温馨提示",
+      message: h("div", { style: "color: #e6c081; font-weight: 600;" }, "请先登录"),
+    });
+  }
+};
+
 onMounted(async () => {
   _removeLocalItem("blog-link-update");
   await pageGetLinksList();
@@ -107,6 +125,25 @@ onBeforeUnmount(() => {
 <template>
   <PageHeader :loading="loading" />
   <div class="center_box">
+    <el-card class="!m-[3px] !p-[10px]">
+      <el-descriptions :column="1">
+        <template #title>
+          <div class="desc-title">{{ "欢迎来到" + getBlogConfig.blog_name }}</div>
+        </template>
+        <el-descriptions-item label="博客链接"
+          ><span v-copy="'http://mrzym.top/'" class="!cursor-pointer">http://mrzym.top/</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="QQ">
+          <span v-copy="'2715158815'" class="!cursor-pointer">2715158815</span>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <span class="desc-remark" style="text-shadow: none">
+            快来申请小张的友链吧
+            <span class="apply-button" @click="applyLinks">友链申请</span>
+          </span>
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-card>
     <el-skeleton :loading="loading" style="height: 100%" animated>
       <template #template>
         <div class="flex justify-start w-[100%] !mt-[10px]" v-for="i in 2" :key="i">
@@ -154,19 +191,10 @@ onBeforeUnmount(() => {
               </div>
               <div :class="['right', activeType == 'site' && active == index ? 'right-hover' : '']">
                 <div class="w-[100%] flex justify-between items-center">
-                  <span :title="item.site_name" class="name">{{ item.site_name }}</span>
-                  <div class="op-icon">
-                    <el-icon
-                      v-if="getUserInfo.id == 1 || getUserInfo.id == item.user_id"
-                      style="margin-right: 3px"
-                      class="left-icon"
-                      @click="updateLink(item)"
-                      ><Edit
-                    /></el-icon>
-                    <el-icon class="right-icon" @click="goToSite(item.url)"><Promotion /></el-icon>
-                  </div>
+                  <span :title="item.site_name" class="name" @click="goToSite(item.url)">{{
+                    item.site_name
+                  }}</span>
                 </div>
-
                 <span
                   :style="{ height: activeType == 'site' && active == index ? '4.6rem' : '0' }"
                   :title="item.site_desc"
@@ -174,6 +202,15 @@ onBeforeUnmount(() => {
                 >
                   {{ item.site_desc }}</span
                 >
+              </div>
+              <div class="op-icon">
+                <el-icon
+                  v-if="getUserInfo.id == 1 || getUserInfo.id == item.user_id"
+                  style="font-size: 16px"
+                  class="left-icon"
+                  @click="updateLink(item)"
+                  ><Edit
+                /></el-icon>
               </div>
             </div>
           </el-card>
@@ -187,15 +224,28 @@ onBeforeUnmount(() => {
       </div>
     </el-skeleton>
   </div>
+  <linkApply v-model:show="dialogVisible" :type="applyType"></linkApply>
 </template>
 
 <style lang="scss" scoped>
+.desc {
+  &-title {
+    font-size: 1.8rem;
+  }
+  &-remark {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
 .site {
   transition: height 0.8s ease;
   &-item {
     display: flex;
     justify-content: space-between;
-    padding: 20px 10px;
+    padding: 10px;
     cursor: pointer;
     position: relative;
     height: 11rem;
@@ -204,10 +254,10 @@ onBeforeUnmount(() => {
 
     .left {
       position: absolute;
-      left: 50%;
-      top: 20px;
-      transform: translateX(-50%);
+      left: 10px;
+      top: 10px;
       transition: all 0.8s;
+      opacity: 0.8;
 
       .avatar-hover {
         animation: avatarHover 0.8s forwards;
@@ -242,15 +292,6 @@ onBeforeUnmount(() => {
         }
       }
 
-      .op-icon {
-        position: absolute;
-        top: 0;
-        right: 0;
-        font-size: 24px;
-        font-weight: 600;
-        color: #c6b4e9;
-      }
-
       .desc {
         transition: all 0.5s;
         display: -webkit-box;
@@ -267,6 +308,15 @@ onBeforeUnmount(() => {
         line-clamp: 3;
         -webkit-box-orient: vertical;
       }
+    }
+
+    .op-icon {
+      position: absolute;
+      top: 3px;
+      right: 10px;
+      font-size: 24px;
+      font-weight: 600;
+      z-index: 3333;
     }
   }
 }
@@ -290,6 +340,7 @@ onBeforeUnmount(() => {
     color: var(--global-white) !important;
   }
 }
+
 .site-mask::before {
   content: "";
   position: absolute;
@@ -339,19 +390,5 @@ onBeforeUnmount(() => {
   color: var(--font-color);
   margin-top: 30px;
   letter-spacing: 1px;
-}
-
-:deep(.el-avatar) {
-  color: var(--font-color);
-  background: linear-gradient(
-    90deg,
-    #dfd2d2 1%,
-    #ead2ea 10.2%,
-    #e4d5ee 19.6%,
-    #d1def3 36.8%,
-    #b5dee5 62.2%,
-    #cfebf3 88.9%,
-    #dde7ea 99%
-  ) !important;
 }
 </style>

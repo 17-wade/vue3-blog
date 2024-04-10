@@ -249,52 +249,21 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="message !min-h-[60vh]" @click="hideSearchInput">
-    <div class="publish-pc">
-      <el-popover placement="top-start" :width="110" trigger="hover" content="点我去发表留言">
-        <template #reference>
-          <svg-icon name="publish" :width="4" :height="4" @click="addMessage"></svg-icon>
-        </template>
-      </el-popover>
-    </div>
-    <div class="publish-mobile">
-      <el-popover placement="top-start" :width="110" trigger="hover" content="点我去发表留言">
-        <template #reference>
-          <svg-icon name="publish" :width="3" :height="3" @click="addMessage"></svg-icon>
-        </template>
-      </el-popover>
-    </div>
     <div class="message-header">
       <div class="message-title">留言板</div>
       <div class="flex items-center !h-[5rem]">
         <TypeWriter size="1.2rem" :typeList="['生活原本沉闷，但跑起来就会有风!']"></TypeWriter>
       </div>
+      <div class="flex items-center">
+        <span class="apply-button !mr-[20px]" @click="addMessage">一定要留下点什么～</span>
+        <el-popover placement="top-start" :width="110" trigger="hover" content="点我去发表留言">
+          <template #reference>
+            <svg-icon name="publish" :width="2" :height="2" @click="addMessage"></svg-icon>
+          </template>
+        </el-popover>
+      </div>
     </div>
     <div class="message-body center_box">
-      <div class="search-tab" @click.stop="showSearchInput">
-        <ul class="tab">
-          <li v-for="item in tabList" :key="item.key" @click="changeTab(item.key, item.label)">
-            <div :class="[item.key == activeTab ? 'active-tab' : '', 'tab-li']">
-              {{ item.label }}
-            </div>
-          </li>
-        </ul>
-        <Transition
-          :duration="{ enter: 0, leave: 500 }"
-          enter-active-class="animate__animated animate__fadeIn"
-          leave-active-class="animate__animated animate__fadeOut"
-        >
-          <div v-if="showSearch" class="!py-[5px] flex justify-center items-center">
-            <el-input
-              :prefix-icon="Search"
-              class="search"
-              v-model="searchTag"
-              placeholder="搜索留言内容"
-              @change="changeSearch"
-              clearable
-            ></el-input>
-          </div>
-        </Transition>
-      </div>
       <el-skeleton :loading="loading" style="height: 100%" animated>
         <template #template>
           <div class="loading">
@@ -302,6 +271,37 @@ onBeforeUnmount(() => {
           </div>
         </template>
         <el-row class="row-height" :gutter="16">
+          <el-col :span="24">
+            <div class="search-tab" @click.stop="showSearchInput">
+              <ul class="tab">
+                <li
+                  v-for="item in tabList"
+                  :key="item.key"
+                  @click="changeTab(item.key, item.label)"
+                >
+                  <div :class="[item.key == activeTab ? 'message-active-tab' : '', 'tab-li']">
+                    {{ item.label }}
+                  </div>
+                </li>
+              </ul>
+              <Transition
+                :duration="{ enter: 0, leave: 500 }"
+                enter-active-class="animate__animated animate__fadeIn"
+                leave-active-class="animate__animated animate__fadeOut"
+              >
+                <div v-if="showSearch" class="!py-[5px] flex justify-center items-center">
+                  <el-input
+                    :prefix-icon="Search"
+                    class="search"
+                    v-model="searchTag"
+                    placeholder="搜索留言内容"
+                    @change="changeSearch"
+                    clearable
+                  ></el-input>
+                </div>
+              </Transition>
+            </div>
+          </el-col>
           <el-col
             :class="'message' + index"
             :xs="24"
@@ -433,9 +433,8 @@ onBeforeUnmount(() => {
     .search-tab {
       width: 100%;
       min-height: 3rem;
-      background-color: rgba(0, 0, 0, 0.2);
-      margin-bottom: 1rem;
-      border-radius: 2rem;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
     }
     .tab {
       width: 100%;
@@ -458,11 +457,11 @@ onBeforeUnmount(() => {
         line-height: 2rem;
         text-align: center;
         padding: 0 0.6rem;
-        border-radius: 1rem;
+        border-radius: 8px;
       }
-      .active-tab {
+      .message-active-tab {
         color: var(--global-white);
-        background-color: var(--primary);
+        background-image: var(--button-linear-gradient);
       }
     }
 
@@ -606,12 +605,7 @@ onBeforeUnmount(() => {
   }
 
   .publish-pc {
-    position: fixed;
-    top: 150px;
-    right: 50px;
-    z-index: 2001;
     cursor: pointer;
-    border: none;
   }
 
   .publish-mobile {
@@ -637,10 +631,6 @@ onBeforeUnmount(() => {
   }
 
   .publish-mobile {
-    position: fixed;
-    top: 150px;
-    right: 10px;
-    z-index: 2001;
     cursor: pointer;
     border: none;
   }

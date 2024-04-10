@@ -3,7 +3,8 @@ import { defineComponent, h, ref, reactive, inject } from "vue";
 
 import { PLAYTYPE } from "../../musicTool";
 import { ElNotification } from "element-plus";
-import { reqSearch, reqSearchSingerHot } from "@/api/music";
+import { reqSearch } from "@/api/music";
+import { deepClone } from "@/utils/tool";
 
 defineComponent({
   name: "CustomMusicList",
@@ -14,8 +15,6 @@ const musicSetters = inject("musicSetters");
 
 const { getCustomerMusicList } = musicGetters;
 const keyWords = ref(""); // 搜索关键词
-const searchList = ref([]); // 搜索列表
-const singer = ref("");
 const keyWordsSongs = ref([]); //
 const params = reactive({
   limit: 20,
@@ -24,6 +23,8 @@ const params = reactive({
   loadMore: true,
   loading: false,
 });
+
+const primaryParams = reactive({ ...params });
 
 const playMusic = (item) => {
   // 设置当前播放音乐
@@ -44,13 +45,14 @@ const isActive = (id) => {
 };
 // 添加歌曲
 const customerAddMusic = (item) => {
+  let newItem = deepClone(item);
+  newItem.ar = item.artists;
+  newItem.al = item.album;
+  newItem.al.picUrl = item.album.artist.img1v1Url;
   if (isActive(item.id)) return;
-  musicSetters.setCustomerMusicList("add", item);
+  musicSetters.setCustomerMusicList("add", newItem);
   musicSetters.setPlayType(PLAYTYPE.CUSTOM);
 
-  searchList.value.forEach((song) => {
-    song.active = isActive(song.id);
-  });
   keyWordsSongs.value.forEach((song) => {
     song.active = isActive(song.id);
   });
@@ -71,16 +73,24 @@ const returnAuthors = (arr, attr) => {
 };
 
 // 搜索歌曲
-const search = async () => {
-  if (!keyWords.value) return;
-  const res = await reqSearch(keyWords.value);
+const search = async (type) => {
+  params.loading = true;
+
+  if (type !== "loadMore") {
+    Object.assign(params, primaryParams);
+  }
+  if (!keyWords.value) {
+    keyWordsSongs.value = [];
+    return;
+  }
+
+  const res = await reqSearch(keyWords.value, params.offset, params.limit);
   if (res.code == 200) {
-    let obj = {
-      id: "",
-      name: "",
-    };
-    keyWordsSongs.value = Array.isArray(res.result.songs) ? res.result.songs : [];
+    let list = Array.isArray(res.result.songs) ? res.result.songs : [];
+    keyWordsSongs.value = params.offset == 0 ? list : keyWordsSongs.value.concat(list);
+    params.loading = false;
     if (!keyWordsSongs.value.length) {
+      params.loadMore = false;
       ElNotification({
         offset: 60,
         title: "提示",
@@ -92,72 +102,37 @@ const search = async () => {
     keyWordsSongs.value.forEach((song) => {
       song.active = isActive(song.id);
     });
-    singer.value = Object.assign(obj, { id: res.result.songs[0].artists[0].id });
-    document.querySelector(".search-music-list__detail").scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-    searchSingerSongs("init");
   }
 };
 
 const searchSingerSongs = async (type) => {
-  if (!params.loadMore || !singer.value) return;
-  params.loading = true;
-  params.id = singer.value.id;
+  if (!params.loadMore) return;
   if (type == "init") {
     params.offset = 0;
   } else {
     params.offset = params.limit + params.offset;
   }
-  const res = await reqSearchSingerHot(params);
-  if (res.code == 200) {
-    let list = Array.isArray(res.songs) ? res.songs : [];
-    if (!list.length) {
-      ElNotification({
-        offset: 60,
-        title: "提示",
-        duration: 1000,
-        message: h("div", { style: "color: #7ec050; font-weight: 600;" }, "没有相关的歌曲"),
-      });
-      return;
-    }
-    if (!list.length) {
-      params.loadMore = false;
-    }
-    list.forEach((song) => {
-      song.active = isActive(song.id);
-    });
-    searchList.value = params.offset == 0 ? list : searchList.value.concat(list);
-    params.loading = false;
-  }
+  search("loadMore");
 };
 </script>
 
 <template>
   <div class="search-music-list">
     <div class="search">
-      <el-input
-        style="width: 180px"
-        v-model="keyWords"
-        placeholder="请输入歌名或歌手"
-        @keyup.enter="search"
-        clearable
-      ></el-input>
-      <el-button
-        style="background-color: #62c28a; margin-left: 10px; color: #676767"
-        @click="search"
-        >搜索</el-button
-      >
+      <el-input v-model="keyWords" placeholder="请输入歌名或歌手" @keyup.enter="search" clearable>
+        <template #append>
+          <el-button @click="search"> 搜索 </el-button>
+        </template>
+      </el-input>
     </div>
     <div class="flex justify-center items-start pt-[50px]">
       <div class="search-music-list__detail">
         <el-row v-if="keyWordsSongs.length" class="body">
-          <el-col :span="24" class="big-title">相似歌曲</el-col>
-          <el-row>
+          <el-row style="width: 100%">
             <el-col :span="24" class="header">
               <div class="title title1">歌曲</div>
               <div class="title title2">作者</div>
+              <div class="title title3">操作</div>
             </el-col>
           </el-row>
           <el-col
@@ -174,32 +149,7 @@ const searchSingerSongs = async (type) => {
                 returnAuthors(item.artists, "name")
               }}</span>
             </div>
-          </el-col>
-        </el-row>
-        <el-row v-if="searchList.length" class="body">
-          <el-col :span="24" class="big-title">根据热门歌手推荐歌曲</el-col>
-          <el-row>
-            <el-col :span="24" class="header">
-              <div class="title title1">歌曲</div>
-              <div class="title title2">作者</div>
-            </el-col>
-          </el-row>
-          <el-col
-            class="flex justify-start items-center overflow-auto"
-            :span="24"
-            v-for="item in searchList"
-            :key="item.id"
-          >
-            <div class="name" @click="playMusic(item)">
-              <span class="text-overflow" :title="item.name">{{ item.name }}</span>
-            </div>
-            <div class="author">
-              <span class="text-overflow" :title="returnAuthors(item.ar, 'name')">{{
-                returnAuthors(item.ar, "name")
-              }}</span>
-            </div>
-
-            <div class="add">
+            <div class="add-music">
               <i
                 :class="[
                   'iconfont',
@@ -235,15 +185,15 @@ const searchSingerSongs = async (type) => {
   .search {
     position: absolute;
     top: 10px;
-    left: 13px;
-    width: 90%;
+    left: 3px;
+    width: 100%;
     height: 30px;
   }
 
   &__detail {
     position: relative;
     width: 330px;
-    height: 350px;
+    height: 340px;
     overflow-x: hidden;
     overflow-y: scroll;
 
@@ -254,16 +204,18 @@ const searchSingerSongs = async (type) => {
     }
 
     .header {
-      width: 330px;
       display: flex;
       .title {
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 1.1rem;
         &1 {
           width: 40%;
         }
         &2 {
-          width: 60%;
+          width: 45%;
+        }
+        &3 {
+          width: 15%;
         }
       }
     }
@@ -283,12 +235,11 @@ const searchSingerSongs = async (type) => {
   }
 
   .author {
-    width: 50%;
+    width: 45%;
   }
 
   .add-music {
-    text-align: center;
-    width: 10%;
+    width: 15%;
     &:hover {
       color: var(--music-main-active);
     }
@@ -308,13 +259,19 @@ const searchSingerSongs = async (type) => {
   }
 
   .empty {
-    width: 80%;
+    width: 100%;
     height: 100%;
     font-size: 0.8rem;
     display: flex;
     justify-content: center;
     align-items: center;
   }
+}
+:deep(.el-input-group__append) {
+  color: #fff;
+  background-color: var(--music-main-active);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 .observe {
   display: flex;

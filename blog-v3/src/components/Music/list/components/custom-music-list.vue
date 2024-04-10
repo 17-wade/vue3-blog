@@ -31,6 +31,31 @@ const customerDeleteMusic = (item) => {
     message: h("div", { style: "color: #7ec050; font-weight: 600;" }, "删除成功"),
   });
 };
+
+const returnAuthor = (item) => {
+  // eslint-disable-next-line no-prototype-builtins
+  if (item.hasOwnProperty("ar")) {
+    return item.ar[0].name;
+    // eslint-disable-next-line no-prototype-builtins
+  } else if (item.hasOwnProperty("artists")) {
+    return item.artists[0].name;
+  } else {
+    return "";
+  }
+};
+
+const returnOther = (item) => {
+  // eslint-disable-next-line no-prototype-builtins
+  if (item.hasOwnProperty("alia")) {
+    return item.alia[0];
+    // eslint-disable-next-line no-prototype-builtins
+  } else if (item.hasOwnProperty("alias")) {
+    return item.alias[0];
+  } else {
+    return "";
+  }
+};
+
 watch(
   () => getCustomerMusicList.value.length,
   () => {
@@ -50,6 +75,7 @@ watch(
             <div class="title title1">歌曲</div>
             <div class="title title2">作者</div>
             <div class="title title3">其他</div>
+            <div class="title title4">操作</div>
           </el-col>
         </el-row>
         <el-row class="body">
@@ -64,13 +90,13 @@ watch(
                 <span class="text-overflow" :title="item.name">{{ item.name }}</span>
               </div>
               <div class="author">
-                <span class="text-overflow" :title="item.ar[0].name">{{
-                  item.hasOwnProperty("ar") ? item.ar[0].name : ""
+                <span class="text-overflow" :title="returnAuthor(item)">{{
+                  returnAuthor(item)
                 }}</span>
               </div>
               <div class="other">
-                <span class="text-overflow" :title="item.alia[0]">{{
-                  item.hasOwnProperty("alia") ? item.alia[0] : ""
+                <span class="text-overflow" :title="returnOther(item)">{{
+                  returnOther(item)
                 }}</span>
               </div>
               <div class="delete-music">
@@ -101,15 +127,19 @@ watch(
       display: flex;
       .title {
         font-weight: 600;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         &1 {
           width: 30%;
         }
         &2 {
-          width: 25%;
+          width: 30%;
         }
         &3 {
           width: 25%;
+        }
+        &4 {
+          text-align: center;
+          width: 15%;
         }
       }
     }
@@ -130,7 +160,7 @@ watch(
   }
 
   .author {
-    width: 25%;
+    width: 30%;
   }
 
   .other {
@@ -138,6 +168,8 @@ watch(
   }
 
   .delete-music {
+    width: 15%;
+    text-align: center;
     &:hover {
       transform: scale(1.1);
     }
