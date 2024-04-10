@@ -264,44 +264,40 @@ onBeforeUnmount(() => {
       </div>
     </div>
     <div class="message-body center_box">
-      <el-skeleton :loading="loading" style="height: 100%" animated>
-        <template #template>
-          <div class="loading">
-            <div class="coffee_cup"></div>
-          </div>
-        </template>
-        <el-row class="row-height" :gutter="16">
-          <el-col :span="24">
-            <div class="search-tab" @click.stop="showSearchInput">
-              <ul class="tab">
-                <li
-                  v-for="item in tabList"
-                  :key="item.key"
-                  @click="changeTab(item.key, item.label)"
-                >
-                  <div :class="[item.key == activeTab ? 'message-active-tab' : '', 'tab-li']">
-                    {{ item.label }}
-                  </div>
-                </li>
-              </ul>
-              <Transition
-                :duration="{ enter: 0, leave: 500 }"
-                enter-active-class="animate__animated animate__fadeIn"
-                leave-active-class="animate__animated animate__fadeOut"
-              >
-                <div v-if="showSearch" class="!py-[5px] flex justify-center items-center">
-                  <el-input
-                    :prefix-icon="Search"
-                    class="search"
-                    v-model="searchTag"
-                    placeholder="搜索留言内容"
-                    @change="changeSearch"
-                    clearable
-                  ></el-input>
+      <el-row class="row-height" :gutter="16">
+        <el-col :span="24">
+          <div class="search-tab" @click.stop="showSearchInput">
+            <ul class="tab">
+              <li v-for="item in tabList" :key="item.key" @click="changeTab(item.key, item.label)">
+                <div :class="[item.key == activeTab ? 'message-active-tab' : '', 'tab-li']">
+                  {{ item.label }}
                 </div>
-              </Transition>
+              </li>
+            </ul>
+            <Transition
+              :duration="{ enter: 0, leave: 500 }"
+              enter-active-class="animate__animated animate__fadeIn"
+              leave-active-class="animate__animated animate__fadeOut"
+            >
+              <div v-if="showSearch" class="!py-[5px] flex justify-center items-center">
+                <el-input
+                  :prefix-icon="Search"
+                  class="search"
+                  v-model="searchTag"
+                  placeholder="搜索留言内容"
+                  @change="changeSearch"
+                  clearable
+                ></el-input>
+              </div>
+            </Transition>
+          </div>
+        </el-col>
+        <el-skeleton :loading="loading" style="height: 100%" animated>
+          <template #template>
+            <div class="loading">
+              <div class="coffee_cup"></div>
             </div>
-          </el-col>
+          </template>
           <el-col
             :class="'message' + index"
             :xs="24"
@@ -389,8 +385,8 @@ onBeforeUnmount(() => {
               </div>
             </el-card>
           </el-col>
-        </el-row>
-      </el-skeleton>
+        </el-skeleton>
+      </el-row>
       <div class="observer">
         <Loading :size="32" v-if="scrollLoading" />
         <template v-else>

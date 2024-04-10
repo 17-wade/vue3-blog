@@ -2,17 +2,17 @@
 <script setup>
 import { ref, reactive, onMounted, onBeforeUnmount, h } from "vue";
 import { getFriendLinks } from "@/api/links";
+import { homeGetConfig } from "@/api/config";
 import { Edit } from "@element-plus/icons-vue";
 import { ElNotification } from "element-plus";
 
-import { user, staticData } from "@/store/index.js";
+import { user } from "@/store/index.js";
 import { storeToRefs } from "pinia";
 
 import SkeletonItem from "@/components/SkeletonItem/skeleton-item.vue";
 import linkApply from "./link-apply.vue";
 import { _removeLocalItem, _setLocalItem } from "@/utils/tool";
 
-const { getBlogConfig } = storeToRefs(staticData());
 const { getUserInfo } = storeToRefs(user());
 
 const active = ref(0);
@@ -29,6 +29,7 @@ const linksList = ref([]);
 const total = ref(0);
 const dialogVisible = ref(false);
 const applyType = ref("add");
+const blogName = ref("");
 let observe;
 let box;
 
@@ -108,8 +109,17 @@ const applyLinks = () => {
   }
 };
 
+// 获取网站详细信息
+const getConfigDetail = async () => {
+  let res = await homeGetConfig();
+  if (res.code == 0 && typeof res.result != "string") {
+    blogName.value = res.result.blog_name;
+  }
+};
+
 onMounted(async () => {
   _removeLocalItem("blog-link-update");
+  await getConfigDetail();
   await pageGetLinksList();
   if (linksList.value.length < total.value) {
     observeBox();
@@ -128,7 +138,7 @@ onBeforeUnmount(() => {
     <el-card class="!m-[3px] !p-[10px]">
       <el-descriptions :column="1">
         <template #title>
-          <div class="desc-title">{{ "欢迎来到" + getBlogConfig.blog_name }}</div>
+          <div class="desc-title">{{ "欢迎来到" + blogName }}</div>
         </template>
         <el-descriptions-item label="博客链接"
           ><span v-copy="'http://mrzym.top/'" class="!cursor-pointer">http://mrzym.top/</span>
@@ -166,7 +176,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </template>
-      <el-row class="site">
+      <el-row class="site" v-if="linksList.length">
         <el-col :xs="24" :sm="8" v-for="(item, index) in linksList" :key="item.id">
           <el-card class="card-hover animate__animated animate__fadeIn">
             <div
@@ -322,7 +332,7 @@ onBeforeUnmount(() => {
 }
 
 .link-skeleton {
-  background-color: #f0f2f5;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .right-hover {

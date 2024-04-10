@@ -65,13 +65,14 @@ const getBgCover = computed(() => {
   const bgList = getPageHeaderList.value;
   // 做一个根据路由来判断判断页面背景图片
   let url;
+  let myUrl = "http://img.mrzym.top/FvmVKfygxBKoJbFVXJwzjgAASL9S";
   if (route.path == "/article") {
-    url = props.article.article_cover || "https://mrzym.gitee.io/blogimg/cover/cute.jpg";
+    url = props.article.article_cover || myUrl;
   } else if (props.bgUrl) {
-    url = props.bgUrl || "https://mrzym.gitee.io/blogimg/cover/cute.jpg";
+    url = props.bgUrl || myUrl;
   } else {
     let index = bgList.findIndex((bg) => bg.route_name == route.name);
-    url = index == -1 ? "https://mrzym.gitee.io/blogimg/cover/cute.jpg" : bgList[index].bg_url;
+    url = index == -1 ? myUrl : bgList[index].bg_url;
   }
   // eslint-disable-next-line
   finalUrl.value = url;
