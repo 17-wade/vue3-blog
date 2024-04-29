@@ -273,6 +273,7 @@ defineExpose({
               <TextOverflow
                 v-else
                 class="content"
+                :key="comment.id"
                 :text="comment.content"
                 :maxLines="3"
                 :font-size="16"
@@ -415,7 +416,6 @@ defineExpose({
 }
 
 .btn {
-  margin-left: 3px;
   color: var(--primary);
   cursor: pointer;
 }

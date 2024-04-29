@@ -4,9 +4,6 @@ import "nprogress/nprogress.css";
 import { createRouter, createWebHashHistory } from "vue-router";
 import Layout from "@/components/Layout/index.vue";
 import navPage from "@/views/index.vue";
-import { h } from "vue";
-import { user } from "@/store/index";
-import { ElNotification } from "element-plus";
 
 const routes = [
   {
@@ -209,17 +206,6 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   NProgress.start();
-  if (to.path == "/register" || to.path == "/login") {
-    if (user().getUserInfo.id) {
-      next("/home");
-      ElNotification({
-        offset: 60,
-        title: "温馨提示",
-        message: h("div", { style: "color: #e6c081; font-weight: 600;" }, "请先退出登录"),
-      });
-      return;
-    }
-  }
   next();
 });
 

@@ -1,5 +1,15 @@
 <script setup>
-import { defineComponent, onMounted, watch, ref, reactive, onBeforeUnmount, h, inject } from "vue";
+import {
+  defineComponent,
+  onMounted,
+  watch,
+  ref,
+  reactive,
+  onBeforeUnmount,
+  h,
+  inject,
+  nextTick,
+} from "vue";
 
 import { reqToplist, reqTopDetaliList } from "@/api/music";
 import { PLAYTYPE } from "../musicTool";
@@ -18,8 +28,6 @@ const currentMusicList = ref([]); // 当前音乐播放列表
 
 const currentTop = ref(null);
 
-const scrollLoading = ref(false);
-
 let observe, box;
 
 defineComponent({
@@ -34,15 +42,17 @@ const params = reactive({
   loadMore: true,
 });
 
-const musicListLoading = ref(false);
+const musicCategoryLoading = ref(false); // 音乐分类加载
+const musicListLoading = ref(false); // 音乐列表加载
+const musicScrollLoading = ref(false); // 音乐滚动加载
 
 //  获取音乐排行榜
 const reqMusicList = async () => {
-  musicListLoading.value = true;
+  musicCategoryLoading.value = true;
   const res = await reqToplist();
   if (res.code == 200) {
     topList.value = res.list;
-    musicListLoading.value = false;
+    musicCategoryLoading.value = false;
     currentTop.value = topList.value[3];
     await reqTopMusicList(topList.value[3].id);
   }
@@ -58,9 +68,9 @@ const reqTopMusicList = async (id) => {
   }
   try {
     if (params.offset == 0) {
-      params.loading = true;
+      musicListLoading.value = true;
     } else {
-      scrollLoading.value = true;
+      musicScrollLoading.value = true;
     }
     const res = await reqTopDetaliList(params);
     if (res.code == 200) {
@@ -71,11 +81,13 @@ const reqTopMusicList = async (id) => {
       currentMusicList.value =
         params.offset == 0 ? res.songs : currentMusicList.value.concat(res.songs);
       musicSetters.setMusicList(currentMusicList.value);
-      observeBox();
     }
   } finally {
-    params.loading = false;
-    scrollLoading.value = false;
+    musicListLoading.value = false;
+    musicScrollLoading.value = false;
+    nextTick(() => {
+      observeBox();
+    });
   }
 };
 
@@ -88,7 +100,7 @@ const observeBox = () => {
     (entries) => {
       entries.forEach(async (e) => {
         if (e.isIntersecting && e.intersectionRatio > 0) {
-          if (!params.loading) {
+          if (!musicListLoading.value) {
             loadMore();
           }
         }
@@ -176,7 +188,7 @@ onBeforeUnmount(() => {
       <div class="music-list__left">
         <div class="header">分类歌单</div>
         <el-row class="body">
-          <div v-if="musicListLoading" class="!w-[100%] !h-[100%] grid place-content-center">
+          <div v-if="musicCategoryLoading" class="!w-[100%] !h-[100%] grid place-content-center">
             <Loading :size="48" />
           </div>
           <template v-else>
@@ -223,7 +235,7 @@ onBeforeUnmount(() => {
           </el-col>
         </el-row>
         <el-row class="body">
-          <div v-if="params.loading" class="!w-[100%] !h-[100%] grid place-content-center">
+          <div v-if="musicListLoading" class="!w-[100%] !h-[100%] grid place-content-center">
             <Loading :size="48" />
           </div>
           <template v-else>
@@ -255,8 +267,8 @@ onBeforeUnmount(() => {
               </div>
             </el-col>
             <div class="observe" @click="loadMore">
-              <template v-if="!params.loading">
-                <Loading :size="24" v-if="scrollLoading" />
+              <template v-if="!musicListLoading">
+                <Loading :size="24" v-if="musicScrollLoading" />
                 <template v-else>
                   {{ params.loadMore ? "下拉/点击加载更多～" : "已经到底了" }}
                 </template>

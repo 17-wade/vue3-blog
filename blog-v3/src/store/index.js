@@ -96,6 +96,7 @@ export const user = defineStore("user", {
       token: "",
       infoFlag: false,
       tokenFlag: false,
+      showLogin: false,
     };
   },
   getters: {
@@ -122,6 +123,9 @@ export const user = defineStore("user", {
         this.clearUserInfo();
       }
     },
+    getShowLogin() {
+      return this.showLogin;
+    },
   },
   actions: {
     // 设置头像
@@ -144,6 +148,9 @@ export const user = defineStore("user", {
       this.token = "";
       this.tokenFlag = false;
       this.infoFlag = false;
+    },
+    setShowLogin(val) {
+      this.showLogin = val;
     },
   },
 });

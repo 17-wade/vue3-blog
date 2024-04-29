@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, reactive, ref, h } from "vue";
+import { onMounted, computed, reactive, h } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { user } from "@/store/index.js";
 import { storeToRefs } from "pinia";
@@ -19,7 +19,6 @@ const headerState = reactive({
   headerClass: "",
   activeIndex: 0,
 });
-const showLogin = ref(false);
 
 const getPath = computed(() => {
   return route.path;
@@ -35,7 +34,7 @@ const handleSelect = async (val, type) => {
       message: h("div", { style: "color: #7ec050; font-weight: 600;" }, "退出成功"),
     });
   } else if (val == "/login") {
-    showLogin.value = true;
+    userStore.setShowLogin(true);
   } else {
     router.push(val);
   }
@@ -51,7 +50,7 @@ const handleClose = () => {
 
 // 去登录
 const toLogin = () => {
-  showLogin.value = true;
+  userStore.setShowLogin(true);
   headerState.drawerShow = false;
   _setLocalItem("blogLastRouter", route.fullPath);
 };
@@ -232,7 +231,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <Login v-model:show="showLogin" />
+  <Login />
 </template>
 
 <style lang="scss" scoped>

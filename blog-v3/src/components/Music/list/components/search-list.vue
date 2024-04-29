@@ -99,6 +99,13 @@ const search = async (type) => {
       });
       return;
     }
+    if (type !== "loadMore") {
+      document.querySelector(".search-music-list__detail").scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+
     keyWordsSongs.value.forEach((song) => {
       song.active = isActive(song.id);
     });

@@ -154,7 +154,7 @@ const updatePassword = async () => {
           Object.assign(pwdForm, primaryPwdForm);
           // 重新登录
           userStore.clearUserInfo();
-          router.push("/login");
+          router.push("/");
         } else {
           ElNotification({
             offset: 60,

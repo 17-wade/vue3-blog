@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, h, watch } from "vue";
 import { user } from "@/store/index";
-import router from "@/router";
 import { useRoute } from "vue-router";
 
 import { addComment, frontGetCommentTotal } from "@/api/comment";
@@ -64,7 +63,7 @@ const changeOrder = (type) => {
 
 const toLogin = () => {
   if (userStore.getUserInfo.id) return;
-  router.push("/login");
+  userStore.setShowLogin(true);
   _setLocalItem("blogLastRouter", route.fullPath);
 };
 
@@ -176,7 +175,9 @@ defineExpose({
   <div class="comment">
     <div class="comment-header">
       <div class="flex justify-start items-center">
-        <span v-if="total" class="total-value"> 评论 {{ numberFormate(total) }} </span>
+        <span v-if="total" class="total-value" @click="toggleExpand">
+          评论 {{ numberFormate(total) }}
+        </span>
         <div v-if="total && isExpand" class="flex items-center">
           <span
             :class="['comment-tab', activeOrder == 'hot' ? 'active-order' : '']"
@@ -248,6 +249,7 @@ defineExpose({
 
     .total {
       &-value {
+        cursor: pointer;
         font-size: 0.8rem;
       }
     }

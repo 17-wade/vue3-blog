@@ -295,6 +295,7 @@ onBeforeUnmount(() => {
     margin-top: 10px;
 
     &__item {
+      max-width: 680px;
       padding: 10px;
       display: flex;
       justify-content: flex-start;
@@ -345,7 +346,6 @@ onBeforeUnmount(() => {
 }
 
 .btn {
-  margin-left: 3px;
   color: var(--primary);
   cursor: pointer;
 }
@@ -375,7 +375,7 @@ onBeforeUnmount(() => {
   }
 
   .like {
-    width: 368px;
+    max-width: 680px;
   }
 
   .right {
@@ -430,10 +430,10 @@ onBeforeUnmount(() => {
     }
   }
   .like {
-    width: 308px;
+    width: 300px;
   }
   .right {
-    width: 308px;
+    width: 300px;
     margin-left: 10px;
 
     &-top {

@@ -1,6 +1,6 @@
 <!-- 用户登录注册  -->
 <script setup>
-import { ref, reactive, watch, h, nextTick } from "vue";
+import { ref, reactive, watch, h, nextTick, onMounted } from "vue";
 
 import { reqLogin, reqRegister, getUserInfoById } from "@/api/user";
 
@@ -12,17 +12,10 @@ import blogAvatar from "@/assets/img/blogAvatar.png";
 import { _encrypt, _decrypt } from "@/utils/encipher";
 
 import { ElNotification } from "element-plus";
-
-const props = defineProps({
-  show: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const emit = defineEmits(["update:show"]);
+import { storeToRefs } from "pinia";
 
 const userStore = user();
+const { getShowLogin } = storeToRefs(userStore);
 
 const usernameV = (rule, value, cb) => {
   if (!value) {
@@ -68,7 +61,6 @@ const registerForm = reactive({
 });
 const primaryRegisterForm = reactive({ ...registerForm });
 const isLogin = ref(true);
-const dialogVisible = ref(false);
 
 const loginRules = {
   username: [{ required: true, message: "请输入用户账号", trigger: "blur" }],
@@ -204,29 +196,23 @@ const submit = async () => {
 };
 
 const handleClose = () => {
-  emit("update:show", false);
+  userStore.setShowLogin(false);
 };
 
-watch(
-  () => props.show,
-  (newV) => {
-    dialogVisible.value = newV;
-    if (newV) {
-      isLogin.value = true;
-      nextTick(() => {
-        loginFormRef.value && loginFormRef.value.resetFields();
-        registerForm.value && registerFormRef.value.resetFields();
+onMounted(() => {
+  isLogin.value = true;
+  nextTick(() => {
+    loginFormRef.value && loginFormRef.value.resetFields();
+    registerForm.value && registerFormRef.value.resetFields();
 
-        // 判断用户是否被记住了
-        let form = _decrypt(_getLocalItem("loginForm"));
-        if (form) {
-          isRemember.value = true;
-          Object.assign(loginForm, JSON.parse(form));
-        }
-      });
+    // 判断用户是否被记住了
+    let form = _decrypt(_getLocalItem("loginForm"));
+    if (form) {
+      isRemember.value = true;
+      Object.assign(loginForm, JSON.parse(form));
     }
-  }
-);
+  });
+});
 
 watch(
   () => isLogin.value,
@@ -244,7 +230,7 @@ watch(
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" width="120" :before-close="handleClose">
+  <el-dialog v-model="getShowLogin" width="120" :before-close="handleClose">
     <template #header>
       <h1>{{ isLogin ? "登录" : "注册" }}</h1>
     </template>
