@@ -232,7 +232,7 @@ onBeforeUnmount(() => {
                     <div class="time">{{ returnTime(talk.createdAt) }}前</div>
                     <div>
                       <i
-                        class="comment-icon iconfont icon-speechbubble"
+                        class="comment-icon iconfont icon-pinglun"
                         @click="toggleComment(talkIndex)"
                       >
                       </i>
@@ -303,6 +303,10 @@ onBeforeUnmount(() => {
     }
   }
 
+  .like {
+    width: 220px;
+  }
+
   .nick-name {
     color: var(--font-color);
   }
@@ -317,7 +321,7 @@ onBeforeUnmount(() => {
   }
 
   .comment-icon {
-    font-size: 15px;
+    font-size: 16px;
     cursor: pointer;
     &:hover {
       color: var(--primary);
@@ -355,7 +359,15 @@ onBeforeUnmount(() => {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
 }
-
+.right {
+  &-bottom-one {
+    margin-top: 10px;
+    width: 220px;
+    height: 220px;
+    display: grid;
+    place-items: center;
+  }
+}
 // pc
 @media screen and (min-width: 768px) {
   .mobile-skeleton {
@@ -372,10 +384,6 @@ onBeforeUnmount(() => {
       width: 60px;
       height: 60px;
     }
-  }
-
-  .like {
-    max-width: 680px;
   }
 
   .right {
@@ -401,14 +409,6 @@ onBeforeUnmount(() => {
       grid-auto-rows: 120px;
       gap: 1px;
     }
-
-    &-bottom-one {
-      margin-top: 10px;
-      width: 220px;
-      height: 220px;
-      display: grid;
-      place-items: center;
-    }
   }
 }
 
@@ -429,9 +429,7 @@ onBeforeUnmount(() => {
       height: 40px;
     }
   }
-  .like {
-    width: 300px;
-  }
+
   .right {
     width: 300px;
     margin-left: 10px;
@@ -454,14 +452,6 @@ onBeforeUnmount(() => {
       grid-template-columns: 100px 100px 100px;
       grid-auto-rows: 100px;
       gap: 1px;
-    }
-
-    &-bottom-one {
-      margin-top: 10px;
-      width: 180px;
-      height: 180px;
-      display: grid;
-      place-items: center;
     }
   }
 }

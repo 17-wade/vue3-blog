@@ -64,7 +64,11 @@ watch(
 </script>
 
 <template>
-  <div class="text-box" ref="textOverflowRef">
+  <div
+    class="text-box"
+    ref="textOverflowRef"
+    :style="{ marginBottom: showSlotNode ? '25px' : '0' }"
+  >
     <span class="keep" ref="overEllipsisRef" :title="text" :style="boxStyle">{{ text }} </span>
 
     <span class="slot-box" ref="slotRef" v-if="showSlotNode">

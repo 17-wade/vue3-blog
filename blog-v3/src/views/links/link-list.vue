@@ -180,6 +180,7 @@ onBeforeUnmount(() => {
         <el-col :xs="24" :sm="8" v-for="(item, index) in linksList" :key="item.id">
           <el-card class="card-hover animate__animated animate__fadeIn">
             <div
+              :key="item.id"
               :style="{
                 backgroundImage: `url(${
                   item.site_avatar || 'http://img.mrzym.top/FgTOrGUz5WJwswSLhPsiGL4DOXe3'
@@ -191,6 +192,7 @@ onBeforeUnmount(() => {
             >
               <div class="left">
                 <el-avatar
+                  :key="item.id"
                   :class="[activeType == 'site' && active == index ? 'avatar-hover' : 'avatar']"
                   fit="cover"
                   :size="80"
