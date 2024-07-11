@@ -48,7 +48,7 @@ setOptions(
           // width: "70",
           // overflow: "truncate"
         },
-        data: ["2022", "2023"],
+        data: ["2023", "2024"],
         triggerEvent: true
       }
     ],
@@ -75,7 +75,7 @@ setOptions(
             }
           ])
         },
-        data: [1, 1]
+        data: [2, 6]
       },
       {
         name: "fork",
@@ -93,7 +93,7 @@ setOptions(
             }
           ])
         },
-        data: [1, 1]
+        data: [12, 38]
       },
       {
         name: "star",
@@ -111,7 +111,7 @@ setOptions(
             }
           ])
         },
-        data: [1, 1]
+        data: [89, 125]
       }
     ],
     addTooltip: true

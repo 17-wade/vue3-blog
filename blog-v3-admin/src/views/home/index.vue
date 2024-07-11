@@ -10,6 +10,7 @@ import fenlei from "@/assets/svg/fenlei.svg?component";
 import wenzhang from "@/assets/svg/wenzhang.svg?component";
 import yonghu from "@/assets/svg/yonghu.svg?component";
 import { getCommitList } from "@/api/site";
+import { dayjs } from "element-plus";
 
 const staticsData = ref({
   articleCount: 0,
@@ -26,20 +27,33 @@ const getStatisticData = async () => {
     Object.assign(staticsData.value, res.result);
   }
 };
+
+// 创建一个从去年到今年 12个月的数组 用于记录代码提交信息
+const createDayArr = () => {
+  const today = new Date();
+
+  // 创建一个从今天开始到去年同一天的日期数组
+  const dateArray = Array.from({ length: 366 }, (_, i) => {
+    return [dayjs(today.getTime() - 8.64e7 * i).format("YYYY-MM-DD"), 0];
+  });
+
+  return dateArray;
+};
+
 // gitee代码提交记录
 const getCodeCommit = async () => {
+  const arr = createDayArr();
   const res: any = await getCommitList();
-  const arr = [];
+
   res.length &&
     res.forEach(v => {
       const index = arr.findIndex(d => d[0] == v.created_at.split("T")[0]);
       if (index != -1) {
-        v.commit_count = v.commit_count - 0;
+        v.commit_count = v.commit_count ? v.commit_count - 0 : 0;
         arr[index][1] += v.commit_count;
-      } else {
-        arr.push([v.created_at.split("T")[0], v.commit_count - 0]);
       }
     });
+
   staticsData.value.commitList = arr;
 };
 
