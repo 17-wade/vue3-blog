@@ -274,6 +274,7 @@ onMounted(() => {
       font-size: 1.1rem;
       line-height: 1.2;
       white-space: pre-line;
+      word-break: break-all;
 
       &__item {
         display: inline-block;
