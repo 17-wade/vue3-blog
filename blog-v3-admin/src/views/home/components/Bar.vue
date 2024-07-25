@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, type Ref } from "vue";
-import { useAppStoreHook } from "@/store/modules/app";
-import {
-  delay,
-  useDark,
-  useECharts,
-  type EchartOptions
-} from "@pureadmin/utils";
+import { ref, computed, type Ref } from "vue";
+import { useDark, useECharts, type EchartOptions } from "@pureadmin/utils";
 import * as echarts from "echarts/core";
 
 const { isDark } = useDark();
@@ -124,12 +118,9 @@ setOptions(
   }
 );
 
-watch(
-  () => useAppStoreHook().getSidebarStatus,
-  () => {
-    delay(600).then(() => resize());
-  }
-);
+defineExpose({
+  resize
+});
 </script>
 
 <template>

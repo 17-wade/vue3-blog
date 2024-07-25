@@ -27,7 +27,8 @@
     "pinia": "^2.0.28",
     "pinia-plugin-persist": "^1.0.0",
     "vue": "^3.3.4",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue3-danmaku": "^1.6.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.7.4",

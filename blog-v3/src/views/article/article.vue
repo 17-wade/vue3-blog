@@ -40,6 +40,7 @@ const { getUserInfo } = storeToRefs(userStore);
 
 const currentUrl = window.location.href;
 const isLike = ref(false);
+const likePending = ref(false);
 
 // 模仿获取md文档信息
 const mdState = reactive({
@@ -67,6 +68,8 @@ const goToArticle = (article) => {
 
 // 文章点赞
 const like = async () => {
+  if (likePending.value) return;
+  likePending.value = true;
   // 取消点赞
   if (isLike.value) {
     let tRes = await cancelArticleLike(route.query.id);
@@ -74,6 +77,8 @@ const like = async () => {
       await cancelLike({ for_id: articleInfo.value.id, type: 1, user_id: getUserInfo.value.id });
       articleInfo.value.thumbs_up_times--;
       isLike.value = false;
+      likePending.value = false;
+
       ElNotification({
         offset: 60,
         title: "提示",
@@ -92,6 +97,7 @@ const like = async () => {
       await addLike({ for_id: articleInfo.value.id, type: 1, user_id: getUserInfo.value.id });
       articleInfo.value.thumbs_up_times++;
       isLike.value = true;
+      likePending.value = false;
       ElNotification({
         offset: 60,
         title: "提示",
@@ -476,7 +482,7 @@ watch(
         scale: 1.2;
       }
       .recommend-box-item {
-        background-color: var(--shadow-mask-bg);
+        background-color: var(--mask-bg);
       }
     }
 
