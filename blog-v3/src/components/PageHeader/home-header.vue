@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
     left: 50%;
     color: var(--menu-color);
     transform: translate(-50%, -50%);
-    z-index: 9999;
+    z-index: 1000;
 
     .icon-arrowdown {
       display: inline-block;
