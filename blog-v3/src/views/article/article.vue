@@ -5,7 +5,7 @@ import { ElNotification } from "element-plus";
 import { staticData, user } from "@/store/index.js";
 import { storeToRefs } from "pinia";
 
-import MdEditor from "md-editor-v3";
+import { MdPreview, MdCatalog } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 
 import {
@@ -22,7 +22,6 @@ import Tooltip from "@/components/ToolTip/tooltip.vue";
 import PageHeader from "@/components/PageHeader/index.vue";
 import GsapCount from "@/components/GsapCount/index";
 
-const MdCatalog = MdEditor.MdCatalog;
 let setUpTimes = null;
 let lastArticleId = null;
 let comment = null,
@@ -200,15 +199,14 @@ watch(
       <el-col :xs="24" :sm="18">
         <el-skeleton v-if="loading" :loading="loading" :rows="8" animated />
         <el-card v-else class="md-preview">
-          <MdEditor
+          <MdPreview
             class="md-preview-v3"
             v-model="mdState.text"
             :editorId="mdState.id"
-            :previewOnly="true"
             :preview-theme="previewTheme"
             :code-theme="codeTheme"
             :theme="mainTheme ? 'dark' : 'light'"
-          ></MdEditor>
+          ></MdPreview>
           <div class="article-info">
             <div class="article-info-inner">
               <div>
