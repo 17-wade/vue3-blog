@@ -255,7 +255,7 @@ watch(
     line-height: 2.4;
     text-align: center;
     color: var(--router-color);
-    z-index: 999;
+    z-index: 1000;
     cursor: pointer;
     transition: all 0.3s;
   }
