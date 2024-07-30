@@ -105,6 +105,20 @@ div:focus {
   box-sizing: border-box;
 }
 
+// 给 头部一个 fadeIn 的动画
+.page-header,
+#home {
+  transition: all 0.5s;
+  animation: fadeIn 1s;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 // 给center_box加了一个向上移动的动画
 .center_box {
   animation: Up 1s;
