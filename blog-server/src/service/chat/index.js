@@ -110,9 +110,15 @@ class ChatService {
       if (message.user_id) {
         let item = message.dataValues;
         const user = await getOneUserInfo({ id: message.user_id });
-        const { nick_name, avatar } = user;
-        item.nick_name = nick_name;
-        item.avatar = avatar;
+        if (user) {
+          const { nick_name, avatar } = user;
+          item.nick_name = nick_name;
+          item.avatar = avatar;
+        } else {
+          item.nick_name = "小黑子";
+          item.avatar = "";
+        }
+
         return item;
       }
     });
