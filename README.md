@@ -31,11 +31,6 @@
 
 作者还有在学习react next项目，感兴趣的话可以加群分享、帮忙答疑
 
-<div style="display: flex">
-  <img src="./alipay.png"  height="60" width="60">
-  <img src="./zhifupay.png" style="margin-left: 10px"  height="60" width="60">
-</div>
-
 <div style="margin-top: 20px">
   <div>博客群1(已满，可以试试能不能加进去，可能有退群的): 763111710</div>
   <div>博客群2: 939161701</div>
