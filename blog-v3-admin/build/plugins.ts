@@ -8,7 +8,7 @@ import { configCompressPlugin } from "./compress";
 // import ElementPlus from "unplugin-element-plus/vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import removeConsole from "vite-plugin-remove-console";
-import themePreprocessorPlugin from "@pureadmin/theme";
+import { themePreprocessorPlugin } from "@pureadmin/theme";
 import DefineOptions from "unplugin-vue-define-options/vite";
 import { genScssMultipleScopeVars } from "../src/layout/theme";
 
