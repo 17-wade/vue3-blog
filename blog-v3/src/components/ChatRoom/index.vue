@@ -503,7 +503,7 @@ onBeforeUnmount(() => {
                     <div class="user-info text-right !mb-[5px]">
                       <span class="user-name">{{ message.nick_name }}</span>
                     </div>
-                    <el-dropdown :trigger="isPc ? 'contextmenu' : 'click'" placement="bottom-start">
+                    <el-dropdown :trigger="isPc ? 'hover' : 'click'" placement="bottom-start">
                       <div v-if="message.content_type == 'text'" class="message-content">
                         {{ message.content }}
                       </div>
@@ -556,7 +556,7 @@ onBeforeUnmount(() => {
                     <div class="user-info text-left !mb-[5px]">
                       <span class="user-name">{{ message.nick_name }}</span>
                     </div>
-                    <el-dropdown trigger="contextmenu" placement="bottom-start">
+                    <el-dropdown trigger="hover" placement="bottom-start">
                       <div v-if="message.content_type == 'text'" class="message-content">
                         {{ message.content }}
                       </div>
@@ -591,7 +591,7 @@ onBeforeUnmount(() => {
                             getUserInfo.id &&
                             (getUserInfo.role == 1 || getUserInfo.id == message.user_id)
                           "
-                          :trigger="isPc ? 'contextmenu' : 'click'"
+                          :trigger="isPc ? 'hover' : 'click'"
                           @click="revertOneChat(message.id)"
                           >撤回</el-dropdown-item
                         >
@@ -835,7 +835,7 @@ onBeforeUnmount(() => {
   }
 
   .chat-container {
-    height: calc(100% - 100px) !important;
+    height: 86vh !important;
   }
 }
 </style>
