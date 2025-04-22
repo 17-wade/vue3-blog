@@ -45,8 +45,8 @@ defineExpose({
     <template v-slot:dm="{ danmu }">
       <div class="danmu-item">
         <el-avatar :src="danmu.avatar">{{ danmu.nick_name }}</el-avatar> :
-        <span class="new-item" v-if="danmu.isNew" v-html="danmu.message"></span>
-        <span v-else v-html="danmu.message"></span>
+        <span class="new-item" v-if="danmu.isNew">{{ danmu.message }}</span>
+        <span v-else>{{ danmu.message }}</span>
       </div>
     </template>
   </vue-danmaku>

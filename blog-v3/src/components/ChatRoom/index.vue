@@ -495,17 +495,18 @@ onBeforeUnmount(() => {
               </div>
               <div v-if="!messageList.length" class="empty">还等什么 赶快聊起来吧</div>
               <div v-else class="message-item" v-for="message in messageList" :key="message.id">
-                <div v-if="message.user_id == getUserInfo.id" class="flex items-start justify-end">
+                <div
+                  v-if="message.user_id == getUserInfo.id"
+                  class="w-full flex items-start justify-end"
+                >
                   <div class="flex flex-col justify-start items-end">
                     <div class="user-info text-right !mb-[5px]">
                       <span class="user-name">{{ message.nick_name }}</span>
                     </div>
                     <el-dropdown :trigger="isPc ? 'contextmenu' : 'click'" placement="bottom-start">
-                      <div
-                        v-if="message.content_type == 'text'"
-                        class="message-content"
-                        v-html="message.content"
-                      ></div>
+                      <div v-if="message.content_type == 'text'" class="message-content">
+                        {{ message.content }}
+                      </div>
                       <div v-else class="message-image" v-image="message.content">
                         <div class="!w-[100%] !h-[100%] rounded-md overflow-hidden">
                           <el-image
@@ -547,7 +548,7 @@ onBeforeUnmount(() => {
                     message.nick_name
                   }}</el-avatar>
                 </div>
-                <div v-else class="flex items-start justify-start">
+                <div v-else class="w-full flex items-start justify-start">
                   <el-avatar class="!mr-[10px] min-w-[32px] min-h-[32px]" :src="message.avatar">{{
                     message.nick_name
                   }}</el-avatar>
@@ -556,11 +557,9 @@ onBeforeUnmount(() => {
                       <span class="user-name">{{ message.nick_name }}</span>
                     </div>
                     <el-dropdown trigger="contextmenu" placement="bottom-start">
-                      <div
-                        v-if="message.content_type == 'text'"
-                        class="message-content"
-                        v-html="message.content"
-                      ></div>
+                      <div v-if="message.content_type == 'text'" class="message-content">
+                        {{ message.content }}
+                      </div>
                       <div v-else class="message-image" v-image="message.content">
                         <div class="!w-[100%] !h-[100%] rounded-md overflow-hidden">
                           <el-image
