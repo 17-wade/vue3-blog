@@ -166,7 +166,7 @@ onMounted(fetchArticles);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 5px 0;
-  z-index: 9999;
+  z-index: 2000;
 }
 
 img {

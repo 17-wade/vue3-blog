@@ -116,7 +116,6 @@ watch(
     :before-close="handleClose"
     :append-to-body="true"
     :size="isMobile() ? '30%' : '15%'"
-    :z-index="9999"
   >
     <div class="image-list">
       <div

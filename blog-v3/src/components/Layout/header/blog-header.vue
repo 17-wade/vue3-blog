@@ -189,7 +189,6 @@ onBeforeUnmount(() => {
           :before-close="handleClose"
           :append-to-body="true"
           size="60%"
-          :z-index="9999"
         >
           <div class="flex justify-center items-center">
             <el-avatar

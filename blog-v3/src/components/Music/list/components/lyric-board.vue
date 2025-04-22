@@ -555,7 +555,7 @@ onBeforeUnmount(() => {
   transform: translateX(-50%);
   width: 100%;
   height: 80px;
-  z-index: 9999;
+  z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;

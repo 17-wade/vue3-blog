@@ -382,7 +382,6 @@ onBeforeUnmount(() => {
       :before-close="toggleDrawer"
       :append-to-body="true"
       size="60%"
-      :z-index="9999"
     >
       <MdCatalog v-if="!loading" :editorId="mdState.id" :scroll-element="scrollElement" />
     </el-drawer>
