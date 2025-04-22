@@ -9,20 +9,20 @@ const isFirst = ref(true);
 const props = defineProps({
   bottom: {
     type: [String, Number],
-    default: "20px",
+    default: "60px",
   },
   right: {
     type: [String, Number],
-    default: "0px",
+    default: "20px",
   },
   // 图标
   svgName: {
     type: String,
-    default: "Rocket",
+    default: "Top",
   },
   svgWidth: {
     type: Number,
-    default: 6,
+    default: 3,
   },
   animation: {
     type: Boolean,
@@ -37,7 +37,7 @@ const props = defineProps({
 const backTopProps = reactive({
   bottom: "",
   right: "",
-  width: "",
+  width: 3,
 });
 
 watch(
@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
   <div
     v-if="!isFirst"
     :class="[backTopShow ? 'back-top-show' : 'back-top-hidden', 'back-top']"
-    :style="`bottom: ${backTopProps.bottom};right:${backTopProps.right};height: ${backTopProps.width};width:${backTopProps.width};`"
+    :style="`bottom: ${backTopProps.bottom};right:${backTopProps.right};`"
   >
     <svg-icon
       :style="{ transform: `rotateZ(${props.rotateDeg}deg)` }"

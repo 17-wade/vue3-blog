@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, h } from "vue";
+import { ref, onMounted, h, onBeforeUnmount } from "vue";
 import { isMobile, getWelcomeSay } from "@/utils/tool";
 import { addView, getAllPageHeader } from "@/api/config";
 import { useRoute, useRouter } from "vue-router";
@@ -11,16 +11,14 @@ import { user, staticData } from "@/store/index.js";
 import MusicPlayer from "@/components/Music/index";
 import BackTop from "@/components/BackTop/index";
 import ChatRoom from "@/components/ChatRoom/index";
+import ContextMenu from "@/components/ContextMenu/index.vue";
 
 const userStore = user();
 const router = useRouter();
 const route = useRoute();
 const { getUserInfo } = storeToRefs(userStore);
-const backTopProps = reactive({
-  right: "",
-  svgWidth: 0,
-});
 const isPc = ref(true);
+const ContextMenuRef = ref(null);
 
 const goBack = () => {
   router.go(-1);
@@ -53,10 +51,15 @@ const welcome = () => {
   });
 };
 
+const handleContextMenu = (e) => {
+  ContextMenuRef.value?.show(e);
+};
+
+const handleClick = () => {
+  ContextMenuRef.value?.hide();
+};
+
 onMounted(async () => {
-  // 首次判断是手机还是pc
-  backTopProps.right = 0;
-  backTopProps.svgWidth = 6;
   isPc.value = !isMobile();
 
   // 上传访问量
@@ -66,18 +69,21 @@ onMounted(async () => {
     getAllPageHeaderBg();
     welcome();
   }
+
+  document.addEventListener("contextmenu", handleContextMenu);
+  document.addEventListener("click", handleClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("contextmenu", handleContextMenu);
+  document.removeEventListener("click", handleClick);
 });
 </script>
 
 <template>
   <div class="app">
     <router-view></router-view>
-    <BackTop
-      v-if="route.path !== '/'"
-      :right="backTopProps.right"
-      :svgWidth="backTopProps.svgWidth"
-      :rotateDeg="-42"
-    />
+    <BackTop v-if="route.path !== '/'" :right="isPc ? 3 : 0" />
     <i
       v-if="!isPc && ['home', '/'].includes(route.path)"
       class="iconfont icon-fanhui"
@@ -85,6 +91,7 @@ onMounted(async () => {
     ></i>
     <MusicPlayer />
     <ChatRoom :isPc="isPc" v-if="route.path !== '/'" />
+    <ContextMenu ref="ContextMenuRef" />
   </div>
 </template>
 

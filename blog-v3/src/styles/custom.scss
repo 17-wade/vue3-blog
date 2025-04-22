@@ -134,3 +134,15 @@ svg {
 .list-leave-active {
   transition: all 0.8s ease;
 }
+
+.chat-dialog {
+  padding: 5px !important;
+  overflow: hidden !important;
+  .el-dialog__header {
+    padding: 0 !important;
+  }
+
+  .el-dialog__body {
+    padding: 0 !important;
+  }
+}

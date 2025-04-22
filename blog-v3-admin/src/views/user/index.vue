@@ -104,7 +104,7 @@ const {
       </template>
       <template #role="{ row }">
         <el-switch
-          :value="row.role"
+          v-model="row.role"
           :active-value="1"
           :inactive-value="2"
           active-text="管理员"
@@ -170,6 +170,7 @@ const {
   height: calc(100vh - 110px);
   overflow: auto;
 }
+
 .user-avatar {
   margin-left: 30px;
   height: 80px;

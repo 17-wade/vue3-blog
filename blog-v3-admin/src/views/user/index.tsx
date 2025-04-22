@@ -142,9 +142,13 @@ export function useColumns() {
   async function changeRole(user) {
     const { id, role } = user;
 
-    const res = await updateUserRole(id, role == 1 ? 2 : 1);
-    if (res.code == 0) {
-      message("修改用户角色成功", { type: "success" });
+    try {
+      const res = await updateUserRole(id, role);
+      if (res.code == 0) {
+        message("修改用户角色成功", { type: "success" });
+        getPageUserList();
+      }
+    } catch (err) {
       getPageUserList();
     }
   }

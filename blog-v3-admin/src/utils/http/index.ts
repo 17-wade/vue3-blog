@@ -58,7 +58,7 @@ class PureHttp {
   /** 请求拦截 */
   private httpInterceptorsRequest(): void {
     PureHttp.axiosInstance.interceptors.request.use(
-      async (config: PureHttpRequestConfig) => {
+      async (config: PureHttpRequestConfig | any) => {
         // 开启进度条动画
         NProgress.start();
         // 优先判断post/get等方法是否传入回掉，否则执行初始化设置等回掉
@@ -128,11 +128,10 @@ class PureHttp {
             message(data.message, { type: "error" });
             break;
           default:
-            return;
         }
 
         // 所有的响应异常 区分来源为取消请求/非取消请求
-        return Promise.resolve($error);
+        return Promise.reject($error);
       }
     );
   }

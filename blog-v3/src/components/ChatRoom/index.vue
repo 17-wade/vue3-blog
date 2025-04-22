@@ -35,7 +35,7 @@ const canLoadMore = ref(false);
 const newMessageCount = ref(0);
 const inputChatRef = ref(null);
 const currentIndex = ref(0);
-const chatVisible = ref(false);
+const dialogVisible = ref(false);
 const yourImageUrl = ref("");
 const imageUpload = ref(null);
 const imageUploading = ref(false);
@@ -110,8 +110,8 @@ const initWebsocket = async (isReconnect = false) => {
     websocket = null;
   }
 
-  websocket = new WebSocket("ws://mrzym.top/ws/");
-  // websocket = new WebSocket("ws://localhost:8889/");
+  // websocket = new WebSocket("ws://mrzym.top/ws/");
+  websocket = new WebSocket("ws://localhost:8889/");
 
   if (websocket) {
     websocket.onopen = () => {
@@ -317,15 +317,17 @@ const selectIcon = (val) => {
   currentIndex.value += 2;
 };
 
-const afterEnterRoom = () => {
+const openChat = () => {
+  dialogVisible.value = true;
   newMessageCount.value = 0;
   nextTick(() => {
     scrollToBottom();
   });
 };
 
-const afterLeaveRoom = () => {
+const handleClose = () => {
   newMessageCount.value = 0;
+  dialogVisible.value = false;
 };
 
 const keepIndex = () => {
@@ -397,20 +399,6 @@ watch(
   }
 );
 
-watch(
-  () => chatVisible.value,
-  (newV) => {
-    if (newV) {
-      document.documentElement.style.overflowY = "hidden";
-    } else {
-      document.documentElement.style.overflowY = "visible";
-    }
-  },
-  {
-    immediate: true,
-  }
-);
-
 onMounted(() => {
   getMessageList();
 });
@@ -421,26 +409,21 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div>
-    <el-popover
-      :visible="chatVisible"
-      placement="bottom-start"
-      :width="isPc ? '580' : '380'"
-      trigger="contextmenu"
-      @after-leave="afterLeaveRoom"
-      @after-enter="afterEnterRoom"
-      style="z-index: 1000"
+  <div class="blog-chat">
+    <div class="blog-chat-btn" @click="openChat">
+      <svg-icon name="chat" :width="1"></svg-icon>
+      聊天室
+    </div>
+    <el-dialog
+      class="chat-dialog"
+      v-model="dialogVisible"
+      width="50%"
+      :show-close="false"
+      appendToBody
+      :before-close="handleClose"
     >
-      <template #reference>
-        <div @click="chatVisible = true" class="blog-chat-btn grid place-items-center">
-          <i v-if="!newMessageCount" class="iconfont icon-pinglun"></i>
-          <el-badge v-else :value="newMessageCount" :max="9">
-            <i class="iconfont icon-pinglun"></i>
-          </el-badge>
-        </div>
-      </template>
       <div class="chat-room" @click="newMessageCount = 0">
-        <el-card class="chat-card">
+        <div class="chat-card">
           <div class="chat-bg">
             <div class="chat-header box-shadow flex items-center justify-between">
               <div class="left">
@@ -501,7 +484,7 @@ onBeforeUnmount(() => {
                 </el-button>
                 <i
                   class="!ml-[10px] iconfont icon-off-search change-color"
-                  @click="chatVisible = false"
+                  @click="dialogVisible = false"
                 ></i>
               </div>
             </div>
@@ -647,25 +630,30 @@ onBeforeUnmount(() => {
               <span class="send-btn" @click="sendMessage">发送</span>
             </div>
           </div>
-        </el-card>
+        </div>
       </div>
-    </el-popover>
+    </el-dialog>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.blog-chat-btn {
+.blog-chat {
   position: fixed;
-  right: 0px;
+  right: -8px;
   bottom: 120px;
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  color: var(--font-color);
-  transition: all 0.3s;
-  .icon-pinglun {
-    font-size: 2.8rem;
-    transform: rotateY(180deg);
+}
+.blog-chat-btn {
+  padding: 3px;
+  text-align: center;
+  width: 26px;
+  border-radius: 3px;
+  color: var(--global-white);
+  background: var(--primary);
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateX(-10px);
   }
 }
 
@@ -705,7 +693,6 @@ onBeforeUnmount(() => {
     .chat-container {
       width: 100%;
       height: 380px;
-      padding: 20px;
       overflow: auto;
 
       .message-item {
@@ -848,12 +835,8 @@ onBeforeUnmount(() => {
     width: 80px !important;
   }
 
-  .blog-chat-btn {
-    right: 0px;
-    bottom: 100px;
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
+  .chat-container {
+    height: calc(100% - 100px) !important;
   }
 }
 </style>

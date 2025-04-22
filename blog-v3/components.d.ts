@@ -18,6 +18,7 @@ declare module '@vue/runtime-core' {
     ChildrenItem: typeof import('./src/components/Comment/item/ChildrenItem.vue')['default']
     Comment: typeof import('./src/components/Comment/Comment.vue')['default']
     CommentInput: typeof import('./src/components/Comment/item/CommentInput.vue')['default']
+    ContextMenu: typeof import('./src/components/ContextMenu/index.vue')['default']
     Controls: typeof import('./src/components/Music/controls/index.vue')['default']
     CustomMusicList: typeof import('./src/components/Music/list/components/custom-music-list.vue')['default']
     ElAffix: typeof import('element-plus/es')['ElAffix']

@@ -165,7 +165,7 @@ div:focus {
     margin-top: 0 !important;
     height: 100% !important;
     margin-bottom: 0 !important;
-    overflow: auto !important;
+    overflow: auto;
   }
   .mobile-affix {
     display: block;
@@ -217,7 +217,7 @@ div:focus {
     min-width: 30vw !important;
     margin-top: 15vh !important;
     min-height: 50vh !important;
-    overflow: auto !important;
+    overflow: auto;
     border-radius: 8px !important;
   }
   .mobile-affix {
