@@ -1,19 +1,25 @@
 // https://www.npmjs.com/package/minio
 const Minio = require("minio");
 
-const { UPLOADTYPE, MINIO_ACCESSKEY, MINIO_SECRETKEY, MINIO_BUCKET, MINIO_PATH, MINIO_PORT } = require("../config/config.default");
+const {
+  UPLOADTYPE,
+  ACCESSKEY,
+  SECRETKEY,
+  BUCKET,
+  MINIO_PATH,
+} = require("../config/config.default");
 
 let minioClient;
 
 if (UPLOADTYPE == "minio") {
-  if (MINIO_PATH && MINIO_ACCESSKEY && MINIO_SECRETKEY) {
+  if (MINIO_PATH && ACCESSKEY && SECRETKEY) {
     try {
       minioClient = new Minio.Client({
         endPoint: MINIO_PATH,
-        port: Number(MINIO_PORT) || 9000,
+        port: 9000,
         useSSL: false,
-        accessKey: MINIO_ACCESSKEY,
-        secretKey: MINIO_SECRETKEY,
+        accessKey: ACCESSKEY,
+        secretKey: SECRETKEY,
       });
     } catch (err) {
       console.log(err);
@@ -39,9 +45,10 @@ const generateRandomFileName = (length) => {
 function bucketExists() {
   // 判断bucket是否存在
   return new Promise((resolve) => {
-    minioClient.bucketExists(MINIO_BUCKET, function (err) {
+    minioClient.bucketExists(BUCKET, function (err) {
       if (err) {
-        if (err.code == "NoSuchBucket") return console.log("bucket does not exist.");
+        if (err.code == "NoSuchBucket")
+          return console.log("bucket does not exist.");
         resolve(false);
       } else {
         resolve(true);
@@ -61,21 +68,27 @@ function upload(filePath) {
 
   // fPutObject(bucketName, objectName, filePath, metaData[, callback])
   return new Promise((resolve) => {
-    minioClient.fPutObject(MINIO_BUCKET, fileName, filePath, metaData, function (err) {
-      if (err) {
-        console.log(err);
-        resolve(false);
-      } else {
-        resolve("/blog-images/" + fileName);
+    minioClient.fPutObject(
+      BUCKET,
+      fileName,
+      filePath,
+      metaData,
+      function (err) {
+        if (err) {
+          console.log(err);
+          resolve(false);
+        } else {
+          resolve("/blog-images/" + fileName);
+        }
       }
-    });
+    );
   });
 }
 
 // 删除minio图片
 function deleteMinioImgs(imgList) {
   imgList.forEach((v) => {
-    minioClient.removeObject(MINIO_BUCKET, v);
+    minioClient.removeObject(BUCKET, v);
   });
 }
 // 上传文件

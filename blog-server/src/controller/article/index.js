@@ -36,7 +36,6 @@ const errorCode = ERRORCODE.ARTICLE;
 const { UPLOADTYPE } = require("../../config/config.default");
 const { deleteImgs } = require("../../utils/qiniuUpload");
 const { deleteMinioImgs } = require("../../utils/minioUpload");
-const { deleteOnlineImgs } = require("../utils/index");
 
 class ArticleController {
   /**
@@ -82,9 +81,6 @@ class ArticleController {
       if (oldCover && oldCover != articleRest.article_cover) {
         if (UPLOADTYPE == "qiniu") {
           await deleteImgs([oldCover.split("/").pop()]);
-        }
-        if (UPLOADTYPE == "online") {
-          await deleteOnlineImgs([oldCover.split("/").pop()]);
         }
         if (UPLOADTYPE == "minio") {
           await deleteMinioImgs([oldCover.split("/").pop()]);
@@ -141,11 +137,6 @@ class ArticleController {
           // 七牛云删除图片
           oldCover && (await deleteImgs([oldCover.split("/").pop()]));
         }
-        if (UPLOADTYPE == "online") {
-          // 服务器删除图片
-          oldCover && (await deleteOnlineImgs([oldCover.split("/").pop()]));
-        }
-
         if (UPLOADTYPE == "minio") {
           oldCover && (await deleteMinioImgs([oldCover.split("/").pop()]));
         }

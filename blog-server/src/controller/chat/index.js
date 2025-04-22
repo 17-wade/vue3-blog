@@ -6,7 +6,6 @@ const errorCode = ERRORCODE.CHAT;
 const { UPLOADTYPE } = require("../../config/config.default.js");
 const { deleteImgs } = require("../../utils/qiniuUpload.js");
 const { deleteMinioImgs } = require("../../utils/minioUpload");
-const { deleteOnlineImgs } = require("../utils/index");
 /**
  * 聊天控制器
  */
@@ -40,9 +39,6 @@ class ChatController {
         if (UPLOADTYPE == "qiniu") {
           deleteImgs(arr); // 这里就不等待删了再去删数据库了 直接删
         }
-        if (UPLOADTYPE == "online") {
-          deleteOnlineImgs(arr);
-        }
         if (UPLOADTYPE == "minio") {
           deleteMinioImgs(arr);
         }
@@ -69,10 +65,6 @@ class ChatController {
         arr.push(content.split("/").pop());
         if (UPLOADTYPE == "qiniu") {
           deleteImgs(arr); // 这里就不等待删了再去删数据库了 直接删
-        }
-
-        if (UPLOADTYPE == "online") {
-          deleteOnlineImgs(arr);
         }
 
         if (UPLOADTYPE == "minio") {

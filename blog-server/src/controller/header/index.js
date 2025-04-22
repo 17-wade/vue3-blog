@@ -4,7 +4,6 @@ const errorCode = ERRORCODE.HEADER;
 const { addOrUpdateHeader, deleteHeader, getAllHeader, getOneByPath } = require("../../service/header/index");
 const { UPLOADTYPE } = require("../../config/config.default");
 const { deleteImgs } = require("../../utils/qiniuUpload");
-const { deleteOnlineImgs } = require("../utils/index");
 const { deleteMinioImgs } = require("../../utils/minioUpload");
 
 class HeaderController {
@@ -49,10 +48,6 @@ class HeaderController {
         arr.push(url.split("/").pop());
         if (UPLOADTYPE == "qiniu") {
           await deleteImgs(arr);
-        }
-
-        if (UPLOADTYPE == "online") {
-          await deleteOnlineImgs(arr);
         }
 
         if (UPLOADTYPE == "minio") {

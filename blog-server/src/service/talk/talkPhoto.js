@@ -2,7 +2,6 @@ const { Op } = require("sequelize");
 const TalkPhoto = require("../../model/talk/talkPhoto.js");
 const { UPLOADTYPE } = require("../../config/config.default");
 const { deleteImgs } = require("../../utils/qiniuUpload");
-const { deleteOnlineImgs } = require("../../controller/utils/index.js");
 const { deleteMinioImgs } = require("../../utils/minioUpload.js");
 
 /**
@@ -35,9 +34,6 @@ class TalkPhotoService {
     let keys = urlList.map((v) => v.dataValues.url.split("/").pop());
     if (UPLOADTYPE == "qiniu") {
       await deleteImgs(keys);
-    }
-    if (UPLOADTYPE == "online") {
-      await deleteOnlineImgs(keys);
     }
     if (UPLOADTYPE == "minio") {
       await deleteMinioImgs(keys);

@@ -6,7 +6,6 @@ const errorCode = ERRORCODE.USER;
 
 const { UPLOADTYPE } = require("../../config/config.default");
 const { deleteImgs } = require("../../utils/qiniuUpload");
-const { deleteOnlineImgs } = require("../utils/index");
 const { deleteMinioImgs } = require("../../utils/minioUpload");
 
 const { getIpAddress } = require("../../utils/tool");
@@ -45,10 +44,6 @@ class userController {
         if (UPLOADTYPE == "qiniu") {
           await deleteImgs([one.avatar.split("/").pop()]);
         }
-        if (UPLOADTYPE == "online") {
-          await deleteOnlineImgs([one.avatar.split("/").pop()]);
-        }
-
         if (UPLOADTYPE == "minio") {
           await deleteMinioImgs([one.avatar.split("/").pop()]);
         }
@@ -106,6 +101,9 @@ class userController {
       const { username, password } = ctx.request.body;
 
       if (username == "admin") {
+        if(!ADMIN_PASSWORD) {
+          return ctx.app.emit("error", throwError(errorCode, "请在env配置文件里添加超级管理员密码"), ctx);
+        }
         if (password == ADMIN_PASSWORD) {
           ctx.body = result("超级管理员登录成功", {
             token: jwt.sign({ nick_name: "超级管理员", id: 5201314, role: 1, username: "admin" }, JWT_SECRET, { expiresIn: "1d" }),
@@ -190,9 +188,6 @@ class userController {
       if (one.avatar && one.avatar != avatar) {
         if (UPLOADTYPE == "qiniu") {
           await deleteImgs([one.avatar.split("/").pop()]);
-        }
-        if (UPLOADTYPE == "online") {
-          await deleteOnlineImgs([one.avatar.split("/").pop()]);
         }
         if (UPLOADTYPE == "minio") {
           await deleteMinioImgs([one.avatar.split("/").pop()]);

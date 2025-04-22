@@ -4,7 +4,6 @@ const errorCode = ERRORCODE.PHOTO;
 const { addPhotos, deletePhotos, getPhotosByAlbumId, revertPhotos, getAllPhotosByAlbumId } = require("../../service/photo/index");
 const { UPLOADTYPE } = require("../../config/config.default");
 const { deleteImgs } = require("../../utils/qiniuUpload");
-const { deleteOnlineImgs } = require("../utils/index");
 const { deleteMinioImgs } = require("../../utils/minioUpload");
 
 class PhotoController {
@@ -36,9 +35,6 @@ class PhotoController {
       let keys = imgList.map((v) => v.url.split("/").pop());
       if (UPLOADTYPE == "qiniu" && type == 2) {
         await deleteImgs(keys);
-      }
-      if (UPLOADTYPE == "online" && type == 2) {
-        await deleteOnlineImgs(keys);
       }
       if (UPLOADTYPE == "minio" && type == 2) {
         deleteMinioImgs(keys);
