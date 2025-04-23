@@ -17,6 +17,10 @@ import RightSideTop from "@/components/RightSide/components/item/right-side-top.
 import RightSideSkeletonItem from "@/components/RightSide/components/skeleton/right-side-skeleton-item.vue";
 import { gsapTransY } from "@/utils/transform";
 
+defineOptions({
+  name: "Home",
+});
+
 const userStore = user();
 
 /** 文章 */
@@ -110,7 +114,6 @@ const observeMobileBox = () => {
     gsapTransY([".mobile-bottom-card"], 30, 0.3, "none");
   });
 };
-
 onMounted(async () => {
   await init();
   await observeMobileBox();

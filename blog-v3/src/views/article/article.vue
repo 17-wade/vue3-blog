@@ -197,9 +197,10 @@ onBeforeUnmount(() => {
 
 <template>
   <PageHeader :article="articleInfo" :loading="loading" />
-  <div class="article">
+  <div class="article article-center">
     <el-row class="article_box">
-      <el-col :xs="24" :sm="18">
+      <el-col :xs="0" :sm="0" :md="4"></el-col>
+      <el-col :xs="24" :sm="18" :md="16">
         <el-skeleton v-if="loading" :loading="loading" :rows="8" animated />
         <el-card v-else class="md-preview">
           <MdPreview
@@ -336,7 +337,7 @@ onBeforeUnmount(() => {
           </div>
         </el-card>
       </el-col>
-      <el-col :xs="0" :sm="6">
+      <el-col :xs="0" :sm="6" :md="4">
         <el-skeleton v-if="loading" :loading="loading" :rows="3" animated />
         <el-card v-else class="command card-hover" header="推荐文章">
           <div class="command-box">

@@ -3,19 +3,9 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { createRouter, createWebHashHistory } from "vue-router";
 import Layout from "@/components/Layout/index.vue";
-import navPage from "@/views/index.vue";
 
 NProgress.configure({ showSpinner: false });
 const routes = [
-  {
-    path: "/",
-    name: "Nav",
-    meta: {
-      name: "导航",
-    },
-    redirect: "/home",
-    component: navPage,
-  },
   {
     path: "/",
     name: "Layout",
@@ -30,6 +20,7 @@ const routes = [
         name: "Home",
         meta: {
           name: "首页",
+          keepAlive: true,
         },
         component: () => import("@/views/home/home.vue"),
       },
@@ -212,14 +203,13 @@ router.beforeEach((to, from, next) => {
 });
 
 // 不滚动到顶部的路由名单
-const whiteList = ["/message/list"];
+const whiteList = ["/message/list", "/home"];
 
 router.afterEach((to) => {
   // 切换就滚动到顶部
   if (!whiteList.includes(to.path)) {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
     });
   }
 
